@@ -102,7 +102,7 @@ try {
 	await page.screenshot({ path: join(OUT, 'screenshot-3.png') });
 
 	// 5. Importing from WP Mail SMTP.
-	php('activate_plugin( "wp-mail-smtp/wp_mail_smtp.php" ); update_option( "wp_mail_smtp", array( "mail" => array( "mailer" => "gmail", "from_email" => "hello@example.com", "from_name" => "Northwind Studio", "from_email_force" => true ), "gmail" => array( "client_id" => "123456789012-wpms.apps.googleusercontent.com", "client_secret" => "GOCSPX-wpms-secret-0123456789", "refresh_token" => "1//wpms-refresh", "user_details" => array( "email" => "hello@example.com" ) ) ) );');
+	php('activate_plugin( "wp-mail-smtp/wp_mail_smtp.php" ); delete_transient( "wp_mail_smtp_just_activated" ); update_option( "wp_mail_smtp", array( "mail" => array( "mailer" => "gmail", "from_email" => "hello@example.com", "from_name" => "Northwind Studio", "from_email_force" => true ), "gmail" => array( "client_id" => "123456789012-wpms.apps.googleusercontent.com", "client_secret" => "GOCSPX-wpms-secret-0123456789", "refresh_token" => "1//wpms-refresh", "user_details" => array( "email" => "hello@example.com" ) ) ) );');
 	await page.setViewport({ width: 1440, height: 760 });
 	await page.goto(admin('nemvo-email-setup'), { waitUntil: 'networkidle0' });
 	await page.screenshot({ path: join(OUT, 'screenshot-5.png') });

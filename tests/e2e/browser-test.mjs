@@ -266,7 +266,8 @@ try {
 	/* ---------------- Import from WP Mail SMTP ---------------- */
 	if (/wp-mail-smtp/.test(wp('plugin', 'list', '--field=name'))) {
 		wp('plugin', 'activate', 'wp-mail-smtp');
-		php('update_option( "wp_mail_smtp", array( "mail" => array( "mailer" => "gmail", "from_email" => "website@example.com", "from_name" => "Website", "from_email_force" => true, "from_name_force" => false ), "gmail" => array( "client_id" => "123456789012-wpms.apps.googleusercontent.com", "client_secret" => "GOCSPX-wpms-secret-0123456789", "refresh_token" => "1//wpms-refresh", "user_details" => array( "email" => "website@example.com" ) ) ) ); NemvoEmail\\Providers::current()->disconnect( false ); delete_option( "nemvo_email_settings" );');
+		// The first activation would send the next admin page to WP Mail SMTP's own wizard.
+		php('delete_transient( "wp_mail_smtp_just_activated" ); update_option( "wp_mail_smtp", array( "mail" => array( "mailer" => "gmail", "from_email" => "website@example.com", "from_name" => "Website", "from_email_force" => true, "from_name_force" => false ), "gmail" => array( "client_id" => "123456789012-wpms.apps.googleusercontent.com", "client_secret" => "GOCSPX-wpms-secret-0123456789", "refresh_token" => "1//wpms-refresh", "user_details" => array( "email" => "website@example.com" ) ) ) ); NemvoEmail\\Providers::current()->disconnect( false ); delete_option( "nemvo_email_settings" );');
 		await page.goto(admin('nemvo-email-setup'), { waitUntil: 'networkidle0' });
 		ok(/sends through Gmail as website@example.com/.test(await text(page, '.nve-callout')), 'the guide offers the WP Mail SMTP import');
 		await page.screenshot({ path: join(SHOTS, 'setup-import.png'), fullPage: true });
