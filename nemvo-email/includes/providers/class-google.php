@@ -321,13 +321,17 @@ class Google extends Provider {
 	}
 
 	/**
-	 * DNS for Google: SPF include, DKIM selector "google", Google's MX hosts.
+	 * DNS for Google: SPF include, DKIM selector "google", Google's MX hosts,
+	 * and addresses of Google's outbound mail servers (from the ranges in
+	 * _spf.google.com, IPv4 and IPv6) to evaluate SPF records with.
 	 *
 	 * @return array
 	 */
 	public function dns_profile() {
 		return array(
 			'spf_include'      => '_spf.google.com',
+			'sending_ips'      => array( '209.85.220.41', '74.125.82.41', '2607:f8b0:4864:20::41', '2a00:1450:4864:20::41' ),
+			'helo'             => 'mail-sor-f41.google.com',
 			'dkim_selector'    => 'google',
 			'mx'               => array( 'google.com', 'googlemail.com' ),
 			'personal_domains' => array( 'gmail.com', 'googlemail.com' ),

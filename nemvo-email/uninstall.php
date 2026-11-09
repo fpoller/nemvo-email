@@ -26,8 +26,10 @@ function nemvo_email_uninstall_site() {
 	foreach ( array( 'nemvo_email_settings', 'nemvo_email_google', 'nemvo_email_dns', 'nemvo_email_db_version' ) as $option ) {
 		delete_option( $option );
 	}
-	delete_transient( 'nemvo_email_activated' );
-	delete_transient( NemvoEmail\Log::FAILED_TRANSIENT );
+	// Short-lived per-user and per-sign-in transients (flash messages, OAuth, hand-checked domains).
+	// With a persistent object cache they live there instead and expire on their own within an hour.
+	global $wpdb;
+	$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", $wpdb->esc_like( '_transient_nemvo_email_' ) . '%', $wpdb->esc_like( '_transient_timeout_nemvo_email_' ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- removing the plugin's transients on uninstall.
 	wp_clear_scheduled_hook( NemvoEmail\Plugin::CRON );
 }
 

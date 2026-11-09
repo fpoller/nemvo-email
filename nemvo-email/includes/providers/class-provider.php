@@ -111,6 +111,8 @@ abstract class Provider {
 	 *
 	 * @return array {
 	 *     @type string   $spf_include      SPF include domain.
+	 *     @type string[] $sending_ips      Addresses of the provider's outbound mail servers (IPv4 and IPv6).
+	 *     @type string   $helo             HELO name of an outbound server (for SPF macros).
 	 *     @type string   $dkim_selector    Default DKIM selector.
 	 *     @type string[] $mx               Host suffixes of the provider's mail servers.
 	 *     @type string[] $personal_domains Consumer domains the user can't change DNS for.

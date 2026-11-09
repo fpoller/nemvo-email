@@ -142,6 +142,16 @@ try {
 	await sleep(200);
 	ok((await page.evaluate(() => navigator.clipboard.readText())) === dmarc, 'copied');
 	await page.screenshot({ path: join(SHOTS, 'setup-domain.png'), fullPage: true });
+
+	// Another DKIM selector, set on the DKIM line of the guide.
+	const dkimState = () => page.$eval('#nve-dns-dkim', (li) => li.className);
+	await page.$eval('#nve-dns-dkim input[name="dkim_selector"]', (i) => (i.value = 'missing1'));
+	await submit(page, '#nve-dns-dkim .nve-selector button[type="submit"]:not([value])');
+	ok(/step=domain/.test(page.url()) && 'is-critical' === (await dkimState()) && /"missing1"/.test(await text(page, '#nve-dns-dkim')), 'a selector without a key: DKIM fails and names the selector');
+	ok(Boolean(await page.$('#nve-dns-dkim button[value="google"]')), 'the common selector that has a key is offered');
+	await submit(page, '#nve-dns-dkim button[value="google"]');
+	ok('is-good' === (await dkimState()) && 'google' === (await page.$eval('#nve-dns-dkim input[name="dkim_selector"]', (i) => i.value)), 'one click uses it');
+	await page.screenshot({ path: join(SHOTS, 'setup-domain-selector.png'), fullPage: true });
 	await submit(page, '.nve-step .nve-actions a.button-primary');
 
 	/* Done */
@@ -226,6 +236,15 @@ try {
 	}
 
 	/* ---------------- Settings: keep content, send, resend ---------------- */
+	await page.goto(admin('nemvo-email-settings'), { waitUntil: 'networkidle0' });
+	await page.$eval('#domain .nve-selector input[name="dkim_selector"]', (i) => (i.value = 'Google, s2026'));
+	await submit(page, '#domain .nve-selector button[type="submit"]:not([value])');
+	ok(/#domain$/.test(page.url()) && 'google, s2026' === (await page.$eval('#domain .nve-selector input[name="dkim_selector"]', (i) => i.value)) && /selector "google"/.test(await text(page, '#nve-dns-dkim')), 'settings: several DKIM selectors, saved and checked');
+	await page.$eval('#domain input[name="domain"]', (i) => (i.value = 'gmail.com'));
+	await submit(page, '#domain form.nve-form button[type="submit"]');
+	ok(/gmail\.com/.test(await text(page, '#domain .nve-dns')), 'another domain can be checked by hand');
+	await page.goto(admin('nemvo-email'), { waitUntil: 'networkidle0' });
+	ok((await page.$$('.nve-chips .nve-badge')).length === 3, '... without replacing the sending domain\'s result');
 	await page.goto(admin('nemvo-email-settings'), { waitUntil: 'networkidle0' });
 	await page.click('input[name="nve[log_content]"]');
 	await submit(page, '#sending button[type="submit"]');

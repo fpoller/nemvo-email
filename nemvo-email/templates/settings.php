@@ -20,12 +20,9 @@ $connected     = $provider->is_connected();
 $settings      = Settings::get();
 $checks        = Health::checks();
 $sender_domain = Mailer::from_domain();
-$dns           = '' !== $sender_domain ? Dns::stored( $sender_domain ) : null;
-$stored        = get_option( Dns::OPTION );
-if ( ! $dns && is_array( $stored ) ) {
-	// A domain checked by hand.
-	$dns = $stored;
-}
+$other         = get_transient( 'nemvo_email_dns_other_' . get_current_user_id() );
+// A domain checked by hand is shown for a while; otherwise the sender domain's daily result.
+$dns          = is_array( $other ) ? $other : ( '' !== $sender_domain ? Dns::stored( $sender_domain ) : null );
 $import       = Import::wp_mail_smtp();
 $settings_url = admin_url( 'admin.php?page=' . Admin::SLUG_SETTINGS );
 $post_url     = admin_url( 'admin-post.php' );
@@ -175,7 +172,7 @@ $constants = implode(
 
 			<section id="domain" class="nve-card nve-section">
 				<h2><?php esc_html_e( 'Domain', 'nemvo-email' ); ?></h2>
-				<p class="nve-lead"><?php esc_html_e( 'SPF, DKIM and DMARC let receivers tell your email from forgeries. The sender domain is checked every day; check another domain, or a custom DKIM selector, here.', 'nemvo-email' ); ?></p>
+				<p class="nve-lead"><?php esc_html_e( 'SPF, DKIM and DMARC let receivers tell your email from forgeries. The sender domain is checked every day, and you can check another domain here. A different DKIM selector is set on the DKIM line below.', 'nemvo-email' ); ?></p>
 				<form method="post" action="<?php echo esc_url( $post_url ); ?>" class="nve-form">
 					<input type="hidden" name="action" value="nemvo_email_dns">
 					<input type="hidden" name="_back" value="<?php echo esc_url( $settings_url . '#domain' ); ?>">
@@ -185,15 +182,12 @@ $constants = implode(
 							<span><?php esc_html_e( 'Domain', 'nemvo-email' ); ?></span>
 							<input type="text" name="domain" value="<?php echo esc_attr( $dns ? $dns['domain'] : $sender_domain ); ?>" placeholder="example.com" spellcheck="false">
 						</label>
-						<label>
-							<span><?php esc_html_e( 'DKIM selector', 'nemvo-email' ); ?></span>
-							<input type="text" name="dkim_selector" value="<?php echo esc_attr( $settings['dkim_selector'] ); ?>" placeholder="<?php echo esc_attr( $provider->dns_profile()['dkim_selector'] ); ?>" class="small-text nve-input-selector" spellcheck="false">
-						</label>
 						<button type="submit" class="button"><?php esc_html_e( 'Check', 'nemvo-email' ); ?></button>
 					</div>
 				</form>
 				<?php
 				if ( $dns ) {
+					$dns_back = $settings_url . '#domain';
 					require NEMVO_EMAIL_DIR . 'templates/partials/dns.php';
 				}
 				?>

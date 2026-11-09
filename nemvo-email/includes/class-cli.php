@@ -90,16 +90,22 @@ class Cli {
 	 * [<domain>]
 	 * : Domain. Default: the sender's.
 	 *
+	 * [--selector=<selectors>]
+	 * : DKIM selector(s) Google signs with, comma-separated. Saved like the setting.
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp nemvo-email dns
 	 *     wp nemvo-email dns example.com
+	 *     wp nemvo-email dns --selector=google2026
 	 *
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Options.
 	 */
 	public function dns( $args, $assoc_args ) {
-		unset( $assoc_args );
+		if ( isset( $assoc_args['selector'] ) ) {
+			Settings::update( array( 'dkim_selector' => Settings::sanitize_selector( $assoc_args['selector'] ) ) );
+		}
 		$domain = $args[0] ?? Mailer::from_domain();
 		if ( '' === $domain ) {
 			WP_CLI::error( 'No sender domain yet; give one: wp nemvo-email dns example.com' );
@@ -118,6 +124,14 @@ class Cli {
 			);
 		}
 		WP_CLI\Utils\format_items( 'table', $rows, array( 'check', 'state', 'title' ) );
+		foreach ( $result['checks'] as $check ) {
+			if ( ! empty( $check['notice'] ) ) {
+				WP_CLI::log( $check['label'] . ': ' . $check['notice'] );
+			}
+		}
+		if ( ! empty( $result['checks']['dkim']['suggest'] ) ) {
+			WP_CLI::log( 'DKIM: there is a key at the selector(s) ' . implode( ', ', $result['checks']['dkim']['suggest'] ) . '; use --selector=<selector> if Google signs with it.' );
+		}
 		foreach ( $result['checks'] as $check ) {
 			if ( ! empty( $check['fix'] ) ) {
 				WP_CLI::log( sprintf( '%s: %s %s "%s"', $check['label'], 'add' === $check['fix']['mode'] ? 'add' : 'change to', $check['fix']['type'] . ' ' . $check['fix']['name'], $check['fix']['value'] ) );

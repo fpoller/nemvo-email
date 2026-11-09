@@ -450,10 +450,6 @@ body.nve-screen #wpbody-content > .notice {
 	max-width: 100%;
 }
 
-.nve-fields--inline .nve-input-selector {
-	width: 110px;
-}
-
 .nve-input-unit {
 	display: inline-flex;
 	align-items: center;
@@ -813,6 +809,16 @@ body.nve-screen #wpbody-content > .notice {
 	font-weight: 600;
 }
 
+.nve-dns__list .nve-dns__notice {
+	display: inline-block;
+	margin-top: 6px;
+	padding: 5px 10px;
+	border-radius: 8px;
+	background: var(--nve-info-bg);
+	color: var(--nve-ink-2);
+	font-size: 12px;
+}
+
 .nve-dns__list .nve-steps {
 	margin: 8px 0 0 20px;
 }
@@ -864,6 +870,40 @@ body.nve-screen #wpbody-content > .notice {
 	flex-basis: 100%;
 	color: var(--nve-ink-2);
 	font-size: 11px;
+}
+
+.nve-selector {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 8px;
+	margin: 12px 0 4px;
+}
+
+.nve-selector label {
+	display: grid;
+	gap: 4px;
+}
+
+.nve-selector label span {
+	color: var(--nve-ink-2);
+	font-size: 12px;
+}
+
+.nve-wrap .nve-selector input[type="text"] {
+	width: 220px;
+	max-width: 100%;
+	min-height: 32px;
+	font-family: var(--nve-mono);
+	font-size: 12px;
+}
+
+.nve-selector small {
+	flex-basis: 100%;
+	max-width: 76ch;
+	color: var(--nve-ink-2);
+	font-size: 12px;
+	line-height: 1.45;
 }
 
 .nve-found {

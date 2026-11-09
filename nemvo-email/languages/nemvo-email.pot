@@ -2,14 +2,14 @@
 # This file is distributed under the MIT.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nemvo Email 1.0.0\n"
+"Project-Id-Version: Nemvo Email 1.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/fpoller/nemvo-email/issues\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-09T19:34:38+00:00\n"
+"POT-Creation-Date: 2026-11-09T20:07:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: nemvo-email\n"
@@ -87,7 +87,7 @@ msgid "Log"
 msgstr ""
 
 #: includes/class-admin.php:66
-#: templates/settings.php:80
+#: templates/settings.php:77
 msgid "Email settings"
 msgstr ""
 
@@ -167,296 +167,380 @@ msgstr ""
 msgid "Settings saved."
 msgstr ""
 
-#: includes/class-admin.php:538
+#: includes/class-admin.php:539
 msgid "Enter a domain name, like example.com."
 msgstr ""
 
 #. translators: %s: list of imported settings
-#: includes/class-admin.php:557
+#: includes/class-admin.php:562
 #, php-format
 msgid "Imported from WP Mail SMTP: %s."
 msgstr ""
 
-#: includes/class-admin.php:558
+#: includes/class-admin.php:563
 msgid "WP Mail SMTP had nothing to import."
 msgstr ""
 
 #. translators: %s: account
-#: includes/class-admin.php:563
+#: includes/class-admin.php:568
 #, php-format
 msgid "The Gmail connection works: WordPress now sends email as %s."
 msgstr ""
 
 #. translators: %s: error
-#: includes/class-admin.php:568
+#: includes/class-admin.php:573
 #, php-format
 msgid "The imported Gmail connection doesn't work: %s"
 msgstr ""
 
-#: includes/class-admin.php:583
+#: includes/class-admin.php:588
 msgid "Sorry, you are not allowed to deactivate plugins."
 msgstr ""
 
-#: includes/class-admin.php:586
+#: includes/class-admin.php:591
 msgid "WP Mail SMTP is deactivated. Its settings are kept, so you can switch back at any time."
 msgstr ""
 
-#: includes/class-admin.php:607
+#: includes/class-admin.php:612
 msgid "The log is empty."
 msgstr ""
 
 #. translators: %s: domain
-#: includes/class-dns.php:212
+#: includes/class-dns.php:237
 #, php-format
 msgid "%s has no SPF record"
 msgstr ""
 
-#: includes/class-dns.php:213
+#: includes/class-dns.php:238
 msgid "SPF lists the servers allowed to send email for your domain. Without it, receivers can't tell your email from forgeries. Add this record:"
 msgstr ""
 
 #. translators: 1: domain, 2: number of records
-#: includes/class-dns.php:228
+#: includes/class-dns.php:253
 #, php-format
 msgid "%1$s has %2$d SPF records"
 msgstr ""
 
-#: includes/class-dns.php:229
+#: includes/class-dns.php:254
 msgid "A domain may have only one SPF record; with several, receivers treat SPF as broken. Replace them with this single record:"
 msgstr ""
 
-#. translators: %s: domain
-#: includes/class-dns.php:249
-#, php-format
-msgid "SPF for %s doesn't include Google"
-msgstr ""
-
-#: includes/class-dns.php:250
-msgid "Your SPF record lists other servers but not Google's, so email sent through Google fails SPF. Change the record to:"
+#: includes/class-dns.php:288
+msgid "The record points to a service that manages it (with redirect=, include: or macros). If that service builds your SPF record, add Google Workspace as a sender there instead of editing DNS."
 msgstr ""
 
 #. translators: %d: number of lookups
-#: includes/class-dns.php:263
-#, php-format
-msgid "SPF needs %d DNS lookups; the limit is 10"
-msgstr ""
-
-#: includes/class-dns.php:264
-msgid "Receivers stop after 10 lookups (each include, a, mx and redirect counts, including the ones inside includes) and treat SPF as broken. Remove includes for services you no longer send with."
-msgstr ""
-
-#. translators: %s: the all mechanism, e.g. +all
-#: includes/class-dns.php:271
-#, php-format
-msgid "SPF ends with %s"
-msgstr ""
-
-#: includes/class-dns.php:273
-msgid "\"+all\" allows every server in the world to send as your domain, which makes SPF useless. End the record with ~all instead:"
-msgstr ""
-
-#: includes/class-dns.php:274
-msgid "\"?all\" says nothing about servers that aren't listed. End the record with ~all instead:"
-msgstr ""
-
-#: includes/class-dns.php:286
-msgid "SPF has no ending"
-msgstr ""
-
-#: includes/class-dns.php:287
-msgid "Without \"~all\" (or \"-all\") at the end, servers that aren't listed are neither allowed nor refused. Change the record to:"
-msgstr ""
-
-#. translators: %s: domain
-#: includes/class-dns.php:299
-#, php-format
-msgid "SPF allows Google to send for %s"
-msgstr ""
-
-#. translators: %d: number of lookups
-#: includes/class-dns.php:301
+#: includes/class-dns.php:298
 #, php-format
 msgid "The record needs %d DNS lookup of the 10 allowed."
 msgid_plural "The record needs %d DNS lookups of the 10 allowed."
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: 1: domain, 2: service name, like DMARC Manager
+#: includes/class-dns.php:306
+#, php-format
+msgid "SPF for %1$s is managed by %2$s"
+msgstr ""
+
+#. translators: %s: host name the record points to
+#: includes/class-dns.php:308
+#, php-format
+msgid "The record points to %s, which serves it."
+msgstr ""
+
+#. translators: %s: SPF result like "fail"
+#: includes/class-dns.php:311
+#, php-format
+msgid "Checked from here, Google's mail servers get \"%s\"; the service may answer receivers differently."
+msgstr ""
+
+#: includes/class-dns.php:312
+msgid "Checked from here, Google's mail servers pass."
+msgstr ""
+
+#. translators: %s: service name
+#: includes/class-dns.php:314
+#, php-format
+msgid "%s can change the record for each query, so it can't be fully checked from here. Make sure Google Workspace is listed as a sender there."
+msgstr ""
+
+#. translators: 1: domain, 2: reason, like "more than 10 DNS lookups"
+#: includes/class-dns.php:322
+#, php-format
+msgid "SPF for %1$s is broken: %2$s"
+msgstr ""
+
+#: includes/class-dns.php:323
+msgid "Receivers treat a broken SPF record as if there were none, so email sent through Google fails SPF. Each include, a, mx, exists and redirect counts as a lookup, including the ones inside includes."
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:332
+#, php-format
+msgid "SPF for %s doesn't allow Google's mail servers"
+msgstr ""
+
+#. translators: 1: an address of Google's mail servers, 2: SPF result like "fail"
+#: includes/class-dns.php:334
+#, php-format
+msgid "Checked the way receivers do: for Google's mail servers (like %1$s) the result is \"%2$s\", so email sent through Google fails SPF."
+msgstr ""
+
+#: includes/class-dns.php:335
+msgid "Or change the record to:"
+msgstr ""
+
+#: includes/class-dns.php:335
+msgid "Change the record to:"
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:349
+#, php-format
+msgid "SPF for %s allows Google's IPv4 mail servers, not IPv6"
+msgstr ""
+
+#: includes/class-dns.php:350
+msgid "Gmail delivers over IPv6 to receivers that support it, such as Gmail and Outlook, and those messages fail SPF. include:_spf.google.com covers both."
+msgstr ""
+
+#. translators: %d: number of lookups
+#: includes/class-dns.php:365
+#, php-format
+msgid "Google passes, but SPF needs %d DNS lookups; the limit is 10"
+msgstr ""
+
+#: includes/class-dns.php:366
+msgid "Receivers stop after 10 lookups, so servers listed after that fail SPF (including the ones inside includes). Remove includes for services you no longer send with."
+msgstr ""
+
+#. translators: %s: the all mechanism, e.g. +all
+#: includes/class-dns.php:373
+#, php-format
+msgid "SPF ends with %s"
+msgstr ""
+
+#: includes/class-dns.php:375
+msgid "\"+all\" allows every server in the world to send as your domain, which makes SPF useless. End the record with ~all instead:"
+msgstr ""
+
+#: includes/class-dns.php:376
+msgid "\"?all\" says nothing about servers that aren't listed. End the record with ~all instead:"
+msgstr ""
+
+#: includes/class-dns.php:388
+msgid "SPF has no ending"
+msgstr ""
+
+#: includes/class-dns.php:389
+msgid "Without \"~all\" (or \"-all\") at the end, servers that aren't listed are neither allowed nor refused. Change the record to:"
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:401
+#, php-format
+msgid "SPF allows Google to send for %s"
+msgstr ""
+
+#. translators: %s: addresses of Google's mail servers
+#: includes/class-dns.php:403
+#, php-format
+msgid "Checked the way receivers do: Google's mail servers (%s) pass."
+msgstr ""
+
+#: includes/class-dns.php:404
+msgid "Google's addresses are listed in the record itself (flattened): it has to change when Google's do, which services that flatten SPF take care of."
+msgstr ""
+
 #. translators: %s: link to the Google Admin console
-#: includes/class-dns.php:422
+#: includes/class-dns.php:580
 #, php-format
 msgid "Open %s in the Google Admin console (Apps › Google Workspace › Gmail › Authenticate email)."
 msgstr ""
 
 #. translators: %s: link to the Google Admin console
-#: includes/class-dns.php:422
+#: includes/class-dns.php:580
 msgid "Authenticate email"
 msgstr ""
 
 #. translators: 1: domain, 2: selector
-#: includes/class-dns.php:424
+#: includes/class-dns.php:582
 #, php-format
 msgid "Choose %1$s, then Generate new record with a 2048-bit key and the prefix selector \"%2$s\"."
 msgstr ""
 
 #. translators: %s: DNS name
-#: includes/class-dns.php:426
+#: includes/class-dns.php:584
 #, php-format
 msgid "Publish the TXT record Google shows, at %s, with your DNS provider."
 msgstr ""
 
-#: includes/class-dns.php:427
+#: includes/class-dns.php:585
 msgid "Back in the Admin console, click Start authentication once the record is visible (usually within an hour), then check again here."
 msgstr ""
 
+#: includes/class-dns.php:588
+msgid "A personal Gmail account can't sign email for your own domain. Receivers can't verify it, and DMARC fails unless SPF aligns. Use a Google Workspace account for this domain."
+msgstr ""
+
+#. translators: 1: selectors checked, 2: selectors that have a key
+#: includes/class-dns.php:591
+#, php-format
+msgid "No DKIM key at the selector %1$s, but there is one at %2$s. If Google Workspace signs with that selector (the prefix chosen in the Admin console), use it. Otherwise set DKIM up in four steps:"
+msgstr ""
+
+#. translators: %s: selectors checked
+#: includes/class-dns.php:594
+#, php-format
+msgid "No DKIM key at the selector %s. If Google Workspace already signs with another selector (the prefix chosen in the Admin console when the key was generated), enter it below. Otherwise set it up in four steps; without your own DKIM signature, Google signs with a google.com domain, which doesn't count for DMARC:"
+msgstr ""
+
 #. translators: %s: domain
-#: includes/class-dns.php:432
+#: includes/class-dns.php:601
 #, php-format
 msgid "Google doesn't sign email for %s with DKIM"
 msgstr ""
 
-#: includes/class-dns.php:434
-msgid "A personal Gmail account can't sign email for your own domain. Receivers can't verify it, and DMARC fails unless SPF aligns. Use a Google Workspace account for this domain."
-msgstr ""
-
-#. translators: %s: selector
-#: includes/class-dns.php:436
-#, php-format
-msgid "No DKIM key was found for the selector \"%s\". Without your own DKIM signature, Google signs with a google.com domain, which doesn't count for DMARC. Set it up in four steps:"
-msgstr ""
-
 #. translators: %s: DNS name
-#: includes/class-dns.php:446
+#: includes/class-dns.php:628
 #, php-format
 msgid "The DKIM key at %s is revoked"
 msgstr ""
 
-#: includes/class-dns.php:447
+#: includes/class-dns.php:629
 msgid "The record has an empty key (p=), which means \"no longer valid\". Generate a new record in the Google Admin console and publish it."
 msgstr ""
 
-#. translators: %d: key size
-#: includes/class-dns.php:456
+#. translators: 1: key size, 2: selector
+#: includes/class-dns.php:637
 #, php-format
-msgid "DKIM works, with a %d-bit key"
+msgid "DKIM works, with a %1$d-bit key (selector \"%2$s\")"
 msgstr ""
 
-#: includes/class-dns.php:457
+#: includes/class-dns.php:638
 msgid "2048 bits is the current recommendation. In the Google Admin console, generate a new 2048-bit record, publish it, and click Start authentication again."
 msgstr ""
 
-#. translators: 1: domain, 2: key size
-#: includes/class-dns.php:465
+#. translators: 1: domain, 2: selector, 3: key size
+#: includes/class-dns.php:646
 #, php-format
-msgid "DKIM key published for %1$s (%2$d-bit)"
+msgid "DKIM key published for %1$s (selector \"%2$s\", %3$d-bit)"
 msgstr ""
 
-#. translators: %s: domain
-#: includes/class-dns.php:467
+#. translators: 1: domain, 2: selector
+#: includes/class-dns.php:648
 #, php-format
-msgid "DKIM key published for %s"
+msgid "DKIM key published for %1$s (selector \"%2$s\")"
 msgstr ""
 
-#: includes/class-dns.php:468
+#: includes/class-dns.php:649
 msgid "Make sure Start authentication is on in the Google Admin console (Gmail › Authenticate email): the record alone doesn't turn signing on."
 msgstr ""
 
 #. translators: %s: domain
-#: includes/class-dns.php:547
+#: includes/class-dns.php:724
 #, php-format
 msgid "%s has no DMARC policy"
 msgstr ""
 
-#: includes/class-dns.php:548
+#: includes/class-dns.php:725
 msgid "DMARC tells receivers what to do with email that fails SPF and DKIM, and sends you reports. Gmail, Yahoo and Microsoft require it from bulk senders and trust domains that have one. Start with a policy that only monitors:"
 msgstr ""
 
 #. translators: %s: DNS name
-#: includes/class-dns.php:561
+#: includes/class-dns.php:738
 #, php-format
 msgid "%s has more than one DMARC record"
 msgstr ""
 
-#: includes/class-dns.php:562
+#: includes/class-dns.php:739
 msgid "Receivers ignore DMARC when there are several records. Delete all but one."
 msgstr ""
 
-#: includes/class-dns.php:571
+#: includes/class-dns.php:748
 msgid "The DMARC record has no valid policy"
 msgstr ""
 
-#: includes/class-dns.php:572
+#: includes/class-dns.php:749
 msgid "A DMARC record needs p=none, p=quarantine or p=reject. Replace it, for example with:"
 msgstr ""
 
+#. translators: %s: tags like "aspf=s, adkim=s"
+#: includes/class-dns.php:774
+#, php-format
+msgid "Alignment is strict (%s): the sending domains must match exactly."
+msgstr ""
+
 #. translators: %s: report addresses
-#: includes/class-dns.php:585
+#: includes/class-dns.php:778
 #, php-format
 msgid "Reports go to %s."
 msgstr ""
 
 #. translators: %s: domain
-#: includes/class-dns.php:594
+#: includes/class-dns.php:787
 #, php-format
 msgid "Email from %s fails DMARC"
 msgstr ""
 
 #. translators: 1: domain, 2: policy (quarantine or reject)
-#: includes/class-dns.php:596
+#: includes/class-dns.php:789
 #, php-format
 msgid "DMARC tells receivers to %2$s email from %1$s"
 msgstr ""
 
-#: includes/class-dns.php:597
+#: includes/class-dns.php:790
 msgid "Email sent through Google passes neither DKIM for your domain nor SPF for the same domain, so it fails DMARC. Set up DKIM above; that fixes it."
 msgstr ""
 
 #. translators: %s: domain
-#: includes/class-dns.php:604
+#: includes/class-dns.php:797
 #, php-format
 msgid "DMARC monitors %s (p=none)"
 msgstr ""
 
-#: includes/class-dns.php:605
+#: includes/class-dns.php:798
 msgid "Receivers report on your email but don't act on failures. Once the reports show only your own services, consider p=quarantine."
 msgstr ""
 
 #. translators: 1: domain, 2: policy
-#: includes/class-dns.php:611
+#: includes/class-dns.php:804
 #, php-format
 msgid "DMARC protects %1$s (p=%2$s)"
 msgstr ""
 
-#: includes/class-dns.php:612
+#: includes/class-dns.php:805
 msgid "Email that fails SPF and DKIM is held back by receivers, and email through Google passes."
 msgstr ""
 
 #. translators: %s: domain
-#: includes/class-dns.php:662
+#: includes/class-dns.php:855
 #, php-format
 msgid "%s doesn't receive email"
 msgstr ""
 
-#: includes/class-dns.php:663
+#: includes/class-dns.php:856
 msgid "There are no MX records, so replies to your messages bounce, and some receivers distrust senders that can't receive. Send from an address that receives email."
 msgstr ""
 
 #. translators: %s: domain
-#: includes/class-dns.php:680
+#: includes/class-dns.php:873
 #, php-format
 msgid "Email to %s is received by Google"
 msgstr ""
 
 #. translators: 1: domain, 2: mail server
-#: includes/class-dns.php:682
+#: includes/class-dns.php:875
 #, php-format
 msgid "Email to %1$s is received by %2$s"
 msgstr ""
 
-#: includes/class-dns.php:684
+#: includes/class-dns.php:877
 msgid "Replies to your messages arrive in Google Workspace."
 msgstr ""
 
-#: includes/class-dns.php:685
+#: includes/class-dns.php:878
 msgid "That's fine: where you receive email doesn't affect sending through Google. Replies go there."
 msgstr ""
 
@@ -472,8 +556,8 @@ msgstr ""
 
 #: includes/class-health.php:101
 #: templates/partials/status.php:22
-#: templates/settings.php:86
-#: templates/settings.php:115
+#: templates/settings.php:83
+#: templates/settings.php:112
 msgid "Connection"
 msgstr ""
 
@@ -531,7 +615,7 @@ msgstr ""
 
 #. translators: %s: date and time
 #: includes/class-health.php:161
-#: templates/partials/dns.php:43
+#: templates/partials/dns.php:44
 #, php-format
 msgid "Checked %s."
 msgstr ""
@@ -685,15 +769,15 @@ msgid "Subject"
 msgstr ""
 
 #: includes/class-privacy.php:80
-#: templates/settings.php:85
-#: templates/settings.php:97
+#: templates/settings.php:82
+#: templates/settings.php:94
 #: assets/js/app.js:548
 #: assets/js/app.js:569
 msgid "Status"
 msgstr ""
 
 #: includes/class-privacy.php:84
-#: templates/settings.php:254
+#: templates/settings.php:248
 #: assets/js/app.js:795
 msgid "From"
 msgstr ""
@@ -747,6 +831,46 @@ msgstr ""
 msgid "Enter a valid email address."
 msgstr ""
 
+#: includes/class-spf.php:133
+msgid "includes or redirects loop"
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-spf.php:148
+#, php-format
+msgid "%s has more than one SPF record"
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-spf.php:187
+#, php-format
+msgid "redirect=%s has no SPF record"
+msgstr ""
+
+#. translators: %s: SPF term
+#: includes/class-spf.php:203
+#, php-format
+msgid "unknown term \"%s\""
+msgstr ""
+
+#: includes/class-spf.php:215
+msgid "include: without a domain"
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-spf.php:230
+#, php-format
+msgid "include:%s has no SPF record"
+msgstr ""
+
+#: includes/class-spf.php:275
+msgid "exists: without a domain"
+msgstr ""
+
+#: includes/class-spf.php:293
+msgid "more than 10 DNS lookups"
+msgstr ""
+
 #. translators: %s: Workspace domain
 #: includes/providers/class-google.php:64
 #: templates/providers/google.php:35
@@ -767,124 +891,124 @@ msgstr ""
 msgid "That doesn't look like a client secret. Google's secrets start with GOCSPX- and contain no spaces."
 msgstr ""
 
-#: includes/providers/class-google.php:405
+#: includes/providers/class-google.php:409
 msgid "The sign-in took too long or was started in another browser. Please try again."
 msgstr ""
 
-#: includes/providers/class-google.php:411
+#: includes/providers/class-google.php:415
 msgid "This sign-in was already used or has expired. Please try again."
 msgstr ""
 
-#: includes/providers/class-google.php:416
+#: includes/providers/class-google.php:420
 msgid "The sign-in was cancelled at Google, so nothing was connected."
 msgstr ""
 
 #. translators: %s: error code from Google
-#: includes/providers/class-google.php:419
+#: includes/providers/class-google.php:423
 #, php-format
 msgid "Google returned an error: %s"
 msgstr ""
 
-#: includes/providers/class-google.php:422
+#: includes/providers/class-google.php:426
 msgid "Google did not return an authorization code. Please try again."
 msgstr ""
 
-#: includes/providers/class-google.php:439
+#: includes/providers/class-google.php:443
 msgid "Google didn't grant permission to send email. Connect again and leave \"Send email on your behalf\" ticked on Google's consent screen."
 msgstr ""
 
-#: includes/providers/class-google.php:442
+#: includes/providers/class-google.php:446
 msgid "Google did not return a refresh token. Remove the app under myaccount.google.com/permissions and connect again."
 msgstr ""
 
-#: includes/providers/class-google.php:448
+#: includes/providers/class-google.php:452
 msgid "Google did not say which account was connected. Please try again."
 msgstr ""
 
-#: includes/providers/class-google.php:451
+#: includes/providers/class-google.php:455
 msgid "Google's answer was meant for another OAuth client. Please try again."
 msgstr ""
 
 #. translators: %s: error message
-#: includes/providers/class-google.php:594
+#: includes/providers/class-google.php:598
 #, php-format
 msgid "Could not reach Google: %s"
 msgstr ""
 
-#: includes/providers/class-google.php:607
+#: includes/providers/class-google.php:611
 msgid "Google no longer accepts the connection. It was removed from the Google account, the password changed, or the OAuth app is still in \"Testing\", where access ends after 7 days. Connect again."
 msgstr ""
 
-#: includes/providers/class-google.php:611
+#: includes/providers/class-google.php:615
 msgid "Google doesn't accept the OAuth client ID and secret. Check them, or create a new secret in Google Cloud and enter it under Settings › Connection."
 msgstr ""
 
 #. translators: 1: error code, 2: description
-#: includes/providers/class-google.php:615
+#: includes/providers/class-google.php:619
 #, php-format
 msgid "Google refused the request (%1$s). %2$s"
 msgstr ""
 
-#: includes/providers/class-google.php:629
+#: includes/providers/class-google.php:633
 msgid "No Google account is connected."
 msgstr ""
 
-#: includes/providers/class-google.php:640
+#: includes/providers/class-google.php:644
 msgid "The stored Google authorization can't be read. The WordPress security keys in wp-config.php (or NEMVO_EMAIL_KEY) have changed since it was connected. Connect again."
 msgstr ""
 
-#: includes/providers/class-google.php:645
+#: includes/providers/class-google.php:649
 msgid "The OAuth client secret is missing or can't be read. Enter it again under Settings › Connection."
 msgstr ""
 
 #. translators: %s: size, e.g. 41 MB
-#: includes/providers/class-google.php:690
+#: includes/providers/class-google.php:694
 #, php-format
 msgid "The message is %s with attachments; Gmail takes at most 35 MB (25 MB of attachments)."
 msgstr ""
 
 #. translators: %s: error message
-#: includes/providers/class-google.php:718
-#: includes/providers/class-google.php:775
+#: includes/providers/class-google.php:722
+#: includes/providers/class-google.php:779
 #, php-format
 msgid "Could not reach Gmail: %s"
 msgstr ""
 
-#: includes/providers/class-google.php:744
+#: includes/providers/class-google.php:748
 msgid "Gmail did not accept the message."
 msgstr ""
 
-#: includes/providers/class-google.php:817
+#: includes/providers/class-google.php:821
 msgid "The Gmail API is not enabled in the Google Cloud project of your OAuth client. Enable it, wait a minute, and try again."
 msgstr ""
 
-#: includes/providers/class-google.php:823
+#: includes/providers/class-google.php:827
 msgid "The connected account didn't grant permission to send email. Connect again and leave \"Send email on your behalf\" ticked."
 msgstr ""
 
-#: includes/providers/class-google.php:826
+#: includes/providers/class-google.php:830
 msgid "Gmail did not accept the authorization. Connect the account again."
 msgstr ""
 
 #. translators: %s: Gmail's own message
-#: includes/providers/class-google.php:831
+#: includes/providers/class-google.php:835
 #, php-format
 msgid "Gmail's sending limit was reached: %s"
 msgstr ""
 
 #. translators: %s: Gmail's own message
-#: includes/providers/class-google.php:831
+#: includes/providers/class-google.php:835
 msgid "too many messages."
 msgstr ""
 
 #. translators: 1: HTTP status, 2: Gmail's message
-#: includes/providers/class-google.php:836
+#: includes/providers/class-google.php:840
 #, php-format
 msgid "Gmail refused the message (%1$d): %2$s"
 msgstr ""
 
 #. translators: 1: HTTP status, 2: Gmail's message
-#: includes/providers/class-google.php:836
+#: includes/providers/class-google.php:840
 msgid "no reason given."
 msgstr ""
 
@@ -892,58 +1016,77 @@ msgstr ""
 msgid "This screen needs JavaScript."
 msgstr ""
 
-#: templates/partials/dns.php:21
+#: templates/partials/dns.php:22
 #: templates/partials/redirect-uri.php:20
-#: templates/settings.php:292
-#: templates/settings.php:294
+#: templates/settings.php:286
+#: templates/settings.php:288
 msgid "Copy"
 msgstr ""
 
 #. translators: %s: domain
-#: templates/partials/dns.php:28
+#: templates/partials/dns.php:29
 #, php-format
 msgid "You send from a %s address. Google takes care of its SPF, DKIM and DMARC, so there is nothing to publish."
 msgstr ""
 
 #. translators: 1: domain, 2: DNS host like Cloudflare, 3: name server
-#: templates/partials/dns.php:36
+#: templates/partials/dns.php:37
 #, php-format
 msgid "The DNS of %1$s is hosted at %2$s (%3$s). Records are added there."
 msgstr ""
 
 #. translators: 1: domain, 2: name server
-#: templates/partials/dns.php:39
+#: templates/partials/dns.php:40
 #, php-format
 msgid "The DNS of %1$s is served by %2$s. Records are added wherever you manage the domain."
 msgstr ""
 
-#: templates/partials/dns.php:72
+#: templates/partials/dns.php:79
+msgid "DKIM selector"
+msgstr ""
+
+#: templates/partials/dns.php:82
+#: templates/settings.php:185
+msgid "Check"
+msgstr ""
+
+#. translators: %s: DKIM selector
+#: templates/partials/dns.php:87
+#, php-format
+msgid "Use \"%s\""
+msgstr ""
+
+#: templates/partials/dns.php:91
+msgid "The prefix chosen in the Google Admin console when the key was generated: the part before ._domainkey in the record name. \"google\" unless you changed it. Separate several with commas."
+msgstr ""
+
+#: templates/partials/dns.php:99
 msgid "Type"
 msgstr ""
 
-#: templates/partials/dns.php:76
+#: templates/partials/dns.php:103
 msgid "Name"
 msgstr ""
 
 #. translators: %s: full DNS name
-#: templates/partials/dns.php:84
+#: templates/partials/dns.php:111
 #, php-format
 msgid "Full name: %s"
 msgstr ""
 
-#: templates/partials/dns.php:91
+#: templates/partials/dns.php:118
 msgid "Change the value to"
 msgstr ""
 
-#: templates/partials/dns.php:91
+#: templates/partials/dns.php:118
 msgid "Value"
 msgstr ""
 
-#: templates/partials/dns.php:102
+#: templates/partials/dns.php:129
 msgid "What is published now"
 msgstr ""
 
-#: templates/partials/dns.php:113
+#: templates/partials/dns.php:140
 msgid "New records are usually visible within minutes; some DNS hosts take up to an hour. Then check again."
 msgstr ""
 
@@ -1077,7 +1220,7 @@ msgid "%s messages"
 msgstr ""
 
 #: templates/providers/google.php:54
-#: templates/settings.php:120
+#: templates/settings.php:117
 msgid "Connected"
 msgstr ""
 
@@ -1111,236 +1254,228 @@ msgstr ""
 msgid "Listed under the OAuth client in Google Cloud. It changes if the site's address changes."
 msgstr ""
 
-#: templates/settings.php:84
+#: templates/settings.php:81
 msgid "Settings sections"
 msgstr ""
 
-#: templates/settings.php:87
-#: templates/settings.php:156
+#: templates/settings.php:84
+#: templates/settings.php:153
 #: templates/setup.php:43
 msgid "Sender"
 msgstr ""
 
-#: templates/settings.php:88
-#: templates/settings.php:168
+#: templates/settings.php:85
+#: templates/settings.php:165
 msgid "Test email"
 msgstr ""
 
-#: templates/settings.php:89
-#: templates/settings.php:177
-#: templates/settings.php:185
+#: templates/settings.php:86
+#: templates/settings.php:174
+#: templates/settings.php:182
 #: templates/setup.php:53
 #: assets/js/app.js:406
 msgid "Domain"
 msgstr ""
 
-#: templates/settings.php:90
-#: templates/settings.php:203
+#: templates/settings.php:87
+#: templates/settings.php:197
 msgid "Sending & log"
 msgstr ""
 
-#: templates/settings.php:91
-#: templates/settings.php:277
+#: templates/settings.php:88
+#: templates/settings.php:271
 msgid "Import"
 msgstr ""
 
-#: templates/settings.php:92
-#: templates/settings.php:290
+#: templates/settings.php:89
+#: templates/settings.php:284
 msgid "Developers"
 msgstr ""
 
-#: templates/settings.php:98
+#: templates/settings.php:95
 msgid "The same checks appear under Tools › Site Health."
 msgstr ""
 
-#: templates/settings.php:111
+#: templates/settings.php:108
 msgid "Open the setup guide"
 msgstr ""
 
 #. translators: 1: provider, 2: account
-#: templates/settings.php:122
+#: templates/settings.php:119
 #, php-format
 msgid "Sending through %1$s as %2$s."
 msgstr ""
 
-#: templates/settings.php:125
+#: templates/settings.php:122
 msgid "Not working"
 msgstr ""
 
-#: templates/settings.php:129
+#: templates/settings.php:126
 msgid "Not connected"
 msgstr ""
 
-#: templates/settings.php:130
+#: templates/settings.php:127
 msgid "WordPress sends email from the web server."
 msgstr ""
 
-#: templates/settings.php:140
+#: templates/settings.php:137
 msgid "Check connection"
 msgstr ""
 
-#: templates/settings.php:143
+#: templates/settings.php:140
 msgid "Connect again"
 msgstr ""
 
-#: templates/settings.php:143
+#: templates/settings.php:140
 #: templates/setup.php:38
 msgid "Connect"
 msgstr ""
 
-#: templates/settings.php:146
+#: templates/settings.php:143
 msgid "Change OAuth client"
 msgstr ""
 
-#: templates/settings.php:149
+#: templates/settings.php:146
 msgid "Disconnect"
 msgstr ""
 
-#: templates/settings.php:149
+#: templates/settings.php:146
 msgid "Disconnect the account? WordPress will send email from the web server until you connect again."
 msgstr ""
 
-#: templates/settings.php:163
+#: templates/settings.php:160
 msgid "Connect an account first; the sender defaults to it."
 msgstr ""
 
-#: templates/settings.php:169
+#: templates/settings.php:166
 msgid "Sends a short message through wp_mail(), like any other WordPress email, and shows the result."
 msgstr ""
 
-#: templates/settings.php:178
-msgid "SPF, DKIM and DMARC let receivers tell your email from forgeries. The sender domain is checked every day; check another domain, or a custom DKIM selector, here."
+#: templates/settings.php:175
+msgid "SPF, DKIM and DMARC let receivers tell your email from forgeries. The sender domain is checked every day, and you can check another domain here. A different DKIM selector is set on the DKIM line below."
 msgstr ""
 
-#: templates/settings.php:189
-msgid "DKIM selector"
-msgstr ""
-
-#: templates/settings.php:192
-msgid "Check"
-msgstr ""
-
-#: templates/settings.php:212
+#: templates/settings.php:206
 msgid "Pause sending"
 msgstr ""
 
-#: templates/settings.php:216
+#: templates/settings.php:210
 msgid "Set by NEMVO_EMAIL_PAUSE."
 msgstr ""
 
-#: templates/settings.php:217
+#: templates/settings.php:211
 msgid "Messages are logged but not sent, and WordPress is told they were sent. For staging copies of a live site, or while you test."
 msgstr ""
 
-#: templates/settings.php:225
+#: templates/settings.php:219
 msgid "Keep the content of messages in the log"
 msgstr ""
 
-#: templates/settings.php:226
+#: templates/settings.php:220
 msgid "Lets you read and resend messages. Messages can contain password reset links and personal data, so this is off by default. Turning it off deletes kept content."
 msgstr ""
 
-#: templates/settings.php:232
+#: templates/settings.php:226
 msgid "Keep log entries for"
 msgstr ""
 
-#: templates/settings.php:233
+#: templates/settings.php:227
 msgid "days"
 msgstr ""
 
-#: templates/settings.php:236
+#: templates/settings.php:230
 msgid "The statistics are counted from the log, so they reach back as far as it does. Recipients' addresses are personal data; Tools › Export and Erase Personal Data include the log."
 msgstr ""
 
-#: templates/settings.php:237
+#: templates/settings.php:231
 msgid "Save"
 msgstr ""
 
-#: templates/settings.php:239
+#: templates/settings.php:233
 msgid "Empty the log"
 msgstr ""
 
-#: templates/settings.php:241
+#: templates/settings.php:235
 msgid "Delete all log entries"
 msgstr ""
 
-#: templates/settings.php:241
+#: templates/settings.php:235
 msgid "Delete every log entry? The statistics start again from zero."
 msgstr ""
 
-#: templates/settings.php:246
+#: templates/settings.php:240
 #: templates/setup.php:163
 msgid "Import from WP Mail SMTP"
 msgstr ""
 
-#: templates/settings.php:250
+#: templates/settings.php:244
 msgid "Mailer"
 msgstr ""
 
-#: templates/settings.php:251
+#: templates/settings.php:245
 msgid "plugin inactive"
 msgstr ""
 
-#: templates/settings.php:258
+#: templates/settings.php:252
 msgid "Gmail"
 msgstr ""
 
 #. translators: %s: account
-#: templates/settings.php:263
+#: templates/settings.php:257
 #, php-format
 msgid "connected as %s"
 msgstr ""
 
-#: templates/settings.php:265
+#: templates/settings.php:259
 msgid "One-Click Setup (can't be imported)"
 msgstr ""
 
-#: templates/settings.php:267
+#: templates/settings.php:261
 msgid "OAuth client, not connected"
 msgstr ""
 
-#: templates/settings.php:275
+#: templates/settings.php:269
 msgid "Imports the sender, \"Do not send\", and the Gmail mailer's OAuth client and connection. WP Mail SMTP's own settings stay as they are."
 msgstr ""
 
-#: templates/settings.php:277
+#: templates/settings.php:271
 msgid "Importing replaces the current connection and sender settings. Continue?"
 msgstr ""
 
-#: templates/settings.php:280
-#: templates/setup.php:373
+#: templates/settings.php:274
+#: templates/setup.php:376
 msgid "Deactivate WP Mail SMTP"
 msgstr ""
 
-#: templates/settings.php:285
+#: templates/settings.php:279
 msgid "WP Mail SMTP isn't installed here, or has no settings worth importing."
 msgstr ""
 
-#: templates/settings.php:291
+#: templates/settings.php:285
 msgid "wp-config.php"
 msgstr ""
 
-#: templates/settings.php:293
+#: templates/settings.php:287
 msgid "WP-CLI"
 msgstr ""
 
-#: templates/settings.php:295
+#: templates/settings.php:289
 msgid "Hooks"
 msgstr ""
 
-#: templates/settings.php:298
+#: templates/settings.php:292
 msgid "Actions after each message, with the PHPMailer object, the result (message id or error) and the provider."
 msgstr ""
 
-#: templates/settings.php:299
+#: templates/settings.php:293
 msgid "Filter a log entry before it is written; return false to leave a message out of the log."
 msgstr ""
 
-#: templates/settings.php:300
+#: templates/settings.php:294
 msgid "Capability for these screens (default manage_options)."
 msgstr ""
 
-#: templates/settings.php:303
+#: templates/settings.php:297
 msgid "Every wp_mail() filter keeps working: wp_mail, wp_mail_from, wp_mail_content_type, phpmailer_init, wp_mail_succeeded and wp_mail_failed."
 msgstr ""
 
@@ -1378,7 +1513,7 @@ msgstr ""
 
 #: templates/setup.php:83
 #: templates/setup.php:316
-#: templates/setup.php:343
+#: templates/setup.php:346
 #: assets/js/admin.js:231
 msgid "Continue"
 msgstr ""
@@ -1621,47 +1756,47 @@ msgstr ""
 msgid "Receivers check three DNS records to tell your email from forgeries: SPF (which servers may send), DKIM (a signature) and DMARC (what to do with failures). Without them, email lands in spam or is rejected."
 msgstr ""
 
-#: templates/setup.php:341
+#: templates/setup.php:344
 msgid "Check again"
 msgstr ""
 
-#: templates/setup.php:343
+#: templates/setup.php:346
 msgid "Continue, fix it later"
 msgstr ""
 
-#: templates/setup.php:349
+#: templates/setup.php:352
 msgid "Email is set up"
 msgstr ""
 
-#: templates/setup.php:349
+#: templates/setup.php:352
 msgid "Almost there"
 msgstr ""
 
-#: templates/setup.php:361
+#: templates/setup.php:364
 msgid "Change"
 msgstr ""
 
-#: templates/setup.php:361
+#: templates/setup.php:364
 msgid "Open"
 msgstr ""
 
-#: templates/setup.php:368
+#: templates/setup.php:371
 msgid "WP Mail SMTP is still active"
 msgstr ""
 
-#: templates/setup.php:369
+#: templates/setup.php:372
 msgid "Nemvo Email sends every message now, so WP Mail SMTP has nothing left to do. Deactivate it so only one plugin handles email; its settings are kept."
 msgstr ""
 
-#: templates/setup.php:379
+#: templates/setup.php:382
 msgid "Every email WordPress sends now goes through Google and appears in the log, with statistics on the overview. The domain check runs again every day, and Site Health warns you if something stops working."
 msgstr ""
 
-#: templates/setup.php:383
+#: templates/setup.php:386
 msgid "Finish"
 msgstr ""
 
-#: templates/setup.php:386
+#: templates/setup.php:389
 msgid "Continue setup"
 msgstr ""
 

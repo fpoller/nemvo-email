@@ -2,7 +2,8 @@
 /**
  * DNS check results with the records to publish.
  *
- * Expects $dns (from Dns::check()) in the including scope.
+ * Expects $dns (from Dns::check()) and $dns_back (where the DKIM selector
+ * form returns to) in the including scope.
  *
  * @package NemvoEmail
  */
@@ -56,6 +57,9 @@ $copy        = __( 'Copy', 'nemvo-email' );
 					<div>
 						<p class="nve-dns__title"><span class="nve-dns__label"><?php echo esc_html( $check['label'] ); ?></span> <strong><?php echo esc_html( $check['title'] ); ?></strong></p>
 						<p><?php echo esc_html( $check['detail'] ); ?></p>
+						<?php if ( ! empty( $check['notice'] ) ) : ?>
+							<p class="nve-dns__notice"><?php echo esc_html( $check['notice'] ); ?></p>
+						<?php endif; ?>
 
 						<?php if ( ! empty( $check['steps'] ) ) : ?>
 							<ol class="nve-steps">
@@ -63,6 +67,29 @@ $copy        = __( 'Copy', 'nemvo-email' );
 									<li><?php echo wp_kses( $step, Admin::inline_html() ); ?></li>
 								<?php endforeach; ?>
 							</ol>
+						<?php endif; ?>
+
+						<?php if ( 'dkim' === $key ) : ?>
+							<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="nve-selector">
+								<input type="hidden" name="action" value="nemvo_email_dns">
+								<input type="hidden" name="domain" value="<?php echo esc_attr( $dns['domain'] ); ?>">
+								<input type="hidden" name="_back" value="<?php echo esc_url( $dns_back ?? '' ); ?>">
+								<?php wp_nonce_field( 'nemvo_email_dns' ); ?>
+								<label>
+									<span><?php esc_html_e( 'DKIM selector', 'nemvo-email' ); ?></span>
+									<input type="text" name="dkim_selector" value="<?php echo esc_attr( $check['selector'] ?? '' ); ?>" placeholder="google" spellcheck="false" autocomplete="off">
+								</label>
+								<button type="submit" class="button"><?php esc_html_e( 'Check', 'nemvo-email' ); ?></button>
+								<?php foreach ( (array) ( $check['suggest'] ?? array() ) as $suggestion ) : ?>
+									<button type="submit" class="button" name="dkim_selector" value="<?php echo esc_attr( $suggestion ); ?>">
+										<?php
+										/* translators: %s: DKIM selector */
+										echo esc_html( sprintf( __( 'Use "%s"', 'nemvo-email' ), $suggestion ) );
+										?>
+									</button>
+								<?php endforeach; ?>
+								<small><?php esc_html_e( 'The prefix chosen in the Google Admin console when the key was generated: the part before ._domainkey in the record name. "google" unless you changed it. Separate several with commas.', 'nemvo-email' ); ?></small>
+							</form>
 						<?php endif; ?>
 
 						<?php if ( ! empty( $check['fix'] ) ) : ?>

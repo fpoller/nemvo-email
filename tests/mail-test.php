@@ -26,6 +26,7 @@ use NemvoEmail\Privacy;
 use NemvoEmail\Providers;
 use NemvoEmail\Providers\Google;
 use NemvoEmail\Settings;
+use NemvoEmail\Spf;
 use NemvoEmail\Stats;
 
 defined( 'ABSPATH' ) || exit;
@@ -735,11 +736,12 @@ wp_delete_user( $sub );
 nve_section( 'DNS' );
 nve_reset();
 nve_connect( 'site@acme.test' );
-$google_spf = array(
-	'TXT _spf.google.com'        => array( 'v=spf1 include:_netblocks.google.com include:_netblocks2.google.com include:_netblocks3.google.com ~all' ),
-	'TXT _netblocks.google.com'  => array( 'v=spf1 ip4:35.190.247.0/24 ip4:64.233.160.0/19 ~all' ),
-	'TXT _netblocks2.google.com' => array( 'v=spf1 ip6:2001:4860:4000::/36 ~all' ),
-	'TXT _netblocks3.google.com' => array( 'v=spf1 ip4:172.217.0.0/19 ~all' ),
+// Google's records as published in November 2026, and Microsoft's for a record that lists both.
+$google_ranges = 'ip4:74.125.0.0/16 ip4:209.85.128.0/17 ip6:2001:4860:4864::/56 ip6:2404:6800:4864::/56 ip6:2607:f8b0:4864::/56 ip6:2800:3f0:4864::/56 ip6:2a00:1450:4864::/56 ip6:2c0f:fb50:4864::/56';
+$google_spf    = array(
+	'TXT _spf.google.com'             => array( 'v=spf1 ' . $google_ranges . ' ~all' ),
+	'TXT _netblocks.google.com'       => array( 'v=spf1 ip4:74.125.0.0/16 ip4:209.85.128.0/17 ~all' ),
+	'TXT spf.protection.outlook.com'  => array( 'v=spf1 ip4:40.92.0.0/15 ip4:40.107.0.0/16 ip6:2a01:111:f400::/48 -all' ),
 );
 $key2048 = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAupZW3VtxrwVE28ZpcmLEuI91tUnmvHMUqRpSMgGXhWz1U1REuhwNlqulnZSRIFmmhuMNDSltpPUTxuOgWG9Sm/xJrx5mVG4xfU50dQUfNeRMaQMrSwd1NJWjsweqLbXrb7XyMiRo12CVEEamMMCB4iOVULkT0lmkOqo1k/jhQpPbQUXsuyFXwPS433sjPwJvxHay8y7kGYbalF0FnXy5cMC+cWYp8cIMretGBPyF1fT2ezI7DOUXt43mQaZDlZAmIp+By2h5C3xkpWePUBY53sUYXskCB1eKjFpjvKmlUekUBzZBRxS4MrFDPDTXKfkVQDrJ0K6b9OEBoLqpTafP9QIDAQAB';
 $key1024 = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC99K1uNTr9F/eOe4aSLLj5ImAW+EMpmm9W1mHdLRmlbksrWqsMlVilCtJdEP/K+qev4vBzJ7avGw7GNoS3xhgbIqZtrVNZvmfS/F5cbUWEw46yCYSZzYaaw41ligJI8DRbWNPZPd+E44mGMd6veg/Tax1SElMcMrLivhrw7GvZCQIDAQAB';
@@ -763,11 +765,102 @@ $r = $check( array( 'TXT acme.test' => array( 'v=spf1 a mx ~all', 'v=spf1 includ
 nve_ok( 'critical' === $r['checks']['spf']['state'] && 'v=spf1 a mx include:_spf.google.com -all' === $r['checks']['spf']['fix']['value'], 'two SPF records: merged into one (' . $r['checks']['spf']['fix']['value'] . ')' );
 
 $r = $check( array( 'TXT acme.test' => array( 'v=spf1 include:_spf.acme-mail.test ~all' ), 'TXT _spf.acme-mail.test' => array( 'v=spf1 include:_spf.google.com ~all' ) ) );
-nve_ok( 'good' === $r['checks']['spf']['state'] && false !== strpos( $r['checks']['spf']['detail'], '5 DNS lookups' ), 'Google through a nested include, lookups counted (' . $r['checks']['spf']['detail'] . ')' );
+nve_ok( 'good' === $r['checks']['spf']['state'] && $r['checks']['spf']['pass'] && false !== strpos( $r['checks']['spf']['detail'], '2 DNS lookups' ) && false === strpos( $r['checks']['spf']['detail'], 'flattened' ), 'Google through a nested include, lookups counted (' . $r['checks']['spf']['detail'] . ')' );
 
-$many = 'v=spf1 include:_spf.google.com a mx include:a.test include:b.test include:c.test include:d.test include:e.test ~all';
+// A record flattened and hosted by a DMARC service, reached with redirect= (like dspf.app).
+$r = $check( array( 'TXT acme.test' => array( 'v=spf1 redirect=spf.acme.test.eu-x1.dspf.test' ), 'TXT spf.acme.test.eu-x1.dspf.test' => array( 'v=spf1 ' . $google_ranges . ' -all' ) ) );
+nve_ok( 'good' === $r['checks']['spf']['state'] && array( 'pass' ) === array_values( array_unique( $r['checks']['spf']['results'] ) ) && false !== strpos( $r['checks']['spf']['detail'], 'flattened' ), 'flattened record behind redirect=: Google passes, IPv4 and IPv6' );
+nve_ok( ! isset( $r['checks']['spf']['fix'] ), '... and nothing to change' );
+
+$r = $check( array( 'TXT acme.test' => array( 'v=spf1 ip4:74.125.0.0/16 ip4:209.85.128.0/17 -all' ) ) );
+nve_ok( 'warning' === $r['checks']['spf']['state'] && false !== strpos( $r['checks']['spf']['title'], 'not IPv6' ) && 'v=spf1 ip4:74.125.0.0/16 ip4:209.85.128.0/17 include:_spf.google.com -all' === $r['checks']['spf']['fix']['value'], 'flattened without IPv6: warning, Gmail sends over IPv6 too' );
+
+$r = $check( array( 'TXT acme.test' => array( 'v=spf1 redirect=spf.acme.test.dspf.test' ), 'TXT spf.acme.test.dspf.test' => array( 'v=spf1 ip4:40.92.0.0/15 -all' ) ) );
+nve_ok( 'critical' === $r['checks']['spf']['state'] && false !== strpos( $r['checks']['spf']['detail'], 'add Google Workspace as a sender there' ) && false !== strpos( $r['checks']['spf']['detail'], '"fail"' ), 'managed record without Google: says to add Google in the service' );
+
+// DMARC Manager's dspf.app serves records dynamically: green, with a notice that it can't be fully checked.
+$r = $check( array( 'TXT acme.test' => array( 'v=spf1 redirect=spf.acme.test.eu-x1.e1.dspf.app' ), 'TXT spf.acme.test.eu-x1.e1.dspf.app' => array( 'v=spf1 ' . $google_ranges . ' -all' ) ) );
+nve_ok( 'good' === $r['checks']['spf']['state'] && false !== strpos( $r['checks']['spf']['title'], 'managed by DMARC Manager' ) && false !== strpos( $r['checks']['spf']['notice'], 'can\'t be fully checked' ) && false !== strpos( $r['checks']['spf']['detail'], 'pass' ), 'dspf.app: green with a notice (' . $r['checks']['spf']['title'] . ')' );
+$r = $check( array( 'TXT acme.test' => array( 'v=spf1 redirect=spf.acme.test.eu-x1.e1.dspf.app' ), 'TXT spf.acme.test.eu-x1.e1.dspf.app' => array( 'v=spf1 -all' ), 'TXT _dmarc.acme.test' => array( 'v=DMARC1; p=reject; aspf=s' ) ) );
+nve_ok( 'good' === $r['checks']['spf']['state'] && ! isset( $r['checks']['spf']['fix'] ) && false !== strpos( $r['checks']['spf']['detail'], '"fail"' ), 'dspf.app: green even when it answers "fail" here, which the detail mentions' );
+nve_ok( 'good' === $r['checks']['dmarc']['state'], '... and DMARC counts SPF as passing' );
+$r = $check( array( 'TXT acme.test' => array( 'v=spf1 include:_spf.dspf.app -all' ) ) );
+nve_ok( 'good' === $r['checks']['spf']['state'] && ! empty( $r['checks']['spf']['notice'] ), 'dspf.app through include: too' );
+
+// Macro-based records (one query per sending address).
+$r = $check(
+	array(
+		'TXT acme.test'                                     => array( 'v=spf1 exists:%{i}._ip.%{d}._spf.mgr.test -all' ),
+		'A 209.85.220.41._ip.acme.test._spf.mgr.test'       => array( '127.0.0.2' ),
+		'A 74.125.82.41._ip.acme.test._spf.mgr.test'        => array( '127.0.0.2' ),
+		'A ' . Spf::expand_macros( '%{i}', 'x', '2607:f8b0:4864:20::41', 'a@b' ) . '._ip.acme.test._spf.mgr.test' => array( '127.0.0.2' ),
+		'A ' . Spf::expand_macros( '%{i}', 'x', '2a00:1450:4864:20::41', 'a@b' ) . '._ip.acme.test._spf.mgr.test' => array( '127.0.0.2' ),
+	)
+);
+nve_ok( 'good' === $r['checks']['spf']['state'], 'exists: with %{i} and %{d} macros' );
+
+$r = $check(
+	array(
+		'TXT acme.test'      => array( 'v=spf1 mx/24//48 a:out.acme.test -all' ),
+		'MX acme.test'       => array( array( 'host' => 'in.acme.test', 'pri' => 1 ) ),
+		'A in.acme.test'     => array( '74.125.82.1', '209.85.220.200' ),
+		'AAAA in.acme.test'  => array( '2607:f8b0:4864:20::1', '2a00:1450:4864:20::99' ),
+	)
+);
+nve_ok( 'good' === $r['checks']['spf']['state'], 'mx with IPv4 and IPv6 prefix lengths' );
+
+$r = $check( array( 'TXT acme.test' => array( 'v=spf1 include:gone.example.test include:_spf.google.com -all' ) ) );
+nve_ok( 'critical' === $r['checks']['spf']['state'] && false !== strpos( $r['checks']['spf']['title'], 'broken' ) && false !== strpos( $r['checks']['spf']['title'], 'gone.example.test' ), 'an include without a record breaks SPF: ' . $r['checks']['spf']['title'] );
+
+$many = 'v=spf1 include:_spf.google.com a mx include:a.test include:b.test include:c.test include:d.test include:e.test include:f.test include:g.test include:h.test ~all';
 $r    = $check( array( 'TXT acme.test' => array( $many ) ) );
-nve_ok( 'critical' === $r['checks']['spf']['state'] && false !== strpos( $r['checks']['spf']['title'], '11' ), 'over 10 lookups: ' . $r['checks']['spf']['title'] );
+nve_ok( 'warning' === $r['checks']['spf']['state'] && false !== strpos( $r['checks']['spf']['title'], '11' ), 'Google passes but the record needs 11 lookups: ' . $r['checks']['spf']['title'] );
+
+$late = 'v=spf1 a mx include:a.test include:b.test include:c.test include:d.test include:e.test include:f.test include:g.test include:h.test include:_spf.google.com ~all';
+$zone = array( 'TXT acme.test' => array( $late ) );
+foreach ( array( 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ) as $letter ) {
+	$zone[ 'TXT ' . $letter . '.test' ] = array( 'v=spf1 ip4:192.0.2.' . ord( $letter ) . ' ~all' );
+}
+$r = $check( $zone );
+nve_ok( 'critical' === $r['checks']['spf']['state'] && false !== strpos( $r['checks']['spf']['title'], 'more than 10 DNS lookups' ), 'Google after the 10th lookup: broken' );
+
+nve_section( 'SPF evaluation' );
+$GLOBALS['nve_dns'] = $google_spf;
+$e                  = Spf::evaluate( '209.85.220.41', '_spf.google.com', 'a@acme.test' );
+nve_ok( 'pass' === $e['result'] && '+ip4:209.85.128.0/17' === $e['match'], 'Google\'s sending address passes Google\'s own record' );
+nve_ok( 'softfail' === Spf::evaluate( '192.0.2.1', '_spf.google.com', 'a@acme.test' )['result'], 'another address softfails' );
+nve_ok( 'none' === Spf::evaluate( '192.0.2.1', 'nothing.test', 'a@acme.test' )['result'], 'no record: none' );
+nve_ok( Spf::in_network( '2a00:1450:4864:20::41', '2a00:1450:4864::', 56 ) && ! Spf::in_network( '2a00:1450:4865::1', '2a00:1450:4864::', 56 ), 'IPv6 prefixes' );
+nve_ok( Spf::in_network( '209.85.255.1', '209.85.128.0', 17 ) && ! Spf::in_network( '209.85.127.255', '209.85.128.0', 17 ) && ! Spf::in_network( '209.85.220.41', '2a00::', 0 ), 'IPv4 prefixes, and no mixing' );
+// RFC 7208 section 7.4.
+$macro = static function ( $spec, $ip = '192.0.2.3' ) {
+	return Spf::expand_macros( $spec, 'email.example.com', $ip, 'strong-bad@email.example.com' );
+};
+$cases = array(
+	'%{s}'                    => 'strong-bad@email.example.com',
+	'%{o}'                    => 'email.example.com',
+	'%{d}'                    => 'email.example.com',
+	'%{d4}'                   => 'email.example.com',
+	'%{d2}'                   => 'example.com',
+	'%{d1}'                   => 'com',
+	'%{dr}'                   => 'com.example.email',
+	'%{d2r}'                  => 'example.email',
+	'%{l}'                    => 'strong-bad',
+	'%{l-}'                   => 'strong.bad',
+	'%{lr-}'                  => 'bad.strong',
+	'%{l1r-}'                 => 'strong',
+	'%{ir}.%{v}._spf.%{d2}'   => '3.2.0.192.in-addr._spf.example.com',
+	'%{lr-}.lp._spf.%{d2}'    => 'bad.strong.lp._spf.example.com',
+	'%{lr-}.lp.%{ir}.%{v}._spf.%{d2}' => 'bad.strong.lp.3.2.0.192.in-addr._spf.example.com',
+);
+$bad = array();
+foreach ( $cases as $spec => $want ) {
+	if ( $macro( $spec ) !== $want ) {
+		$bad[] = $spec . ' => ' . $macro( $spec );
+	}
+}
+nve_ok( ! $bad, 'macro expansion matches RFC 7208 ' . implode( '; ', $bad ) );
+nve_ok( '1.0.b.c.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6._spf.example.com' === $macro( '%{ir}.%{v}._spf.%{d2}', '2001:db8::cb01' ), 'IPv6 macro expansion (RFC 7208)' );
 
 $r = $check( array( 'TXT acme.test' => array( 'v=spf1 include:_spf.google.com +all' ) ) );
 nve_ok( 'warning' === $r['checks']['spf']['state'] && 'v=spf1 include:_spf.google.com ~all' === $r['checks']['spf']['fix']['value'], '+all: change to ~all' );
@@ -792,8 +885,32 @@ $r = $check( $base + array( 'TXT google._domainkey.acme.test' => array( 'v=DKIM1
 nve_ok( 'critical' === $r['checks']['dkim']['state'] && false !== strpos( $r['checks']['dkim']['title'], 'revoked' ), 'empty DKIM key: revoked' );
 Settings::update( array( 'dkim_selector' => 'mail2026' ) );
 $r = $check( $base + array( 'TXT mail2026._domainkey.acme.test' => array( 'v=DKIM1; k=rsa; p=' . $key2048 ) ) );
-nve_ok( 'good' === $r['checks']['dkim']['state'] && 'mail2026' === $r['checks']['dkim']['selector'], 'custom DKIM selector' );
+nve_ok( 'good' === $r['checks']['dkim']['state'] && 'mail2026' === $r['checks']['dkim']['active'] && false !== strpos( $r['checks']['dkim']['title'], '"mail2026"' ), 'custom DKIM selector: ' . $r['checks']['dkim']['title'] );
+Settings::update( array( 'dkim_selector' => Settings::sanitize_selector( 'google, Mail2026._domainkey.acme.test; bad selector!' ) ) );
+nve_ok( 'google, mail2026, bad' === Settings::get( 'dkim_selector' ), 'selectors: a list; case, pasted record names and invalid ones cleaned (' . Settings::get( 'dkim_selector' ) . ')' );
+Settings::update( array( 'dkim_selector' => 'google, mail2026' ) );
+$r = $check( $base + array( 'TXT mail2026._domainkey.acme.test' => array( 'v=DKIM1; k=rsa; p=' . $key2048 ) ) );
+nve_ok( 'good' === $r['checks']['dkim']['state'] && 'mail2026' === $r['checks']['dkim']['active'] && array( 'google', 'mail2026' ) === $r['checks']['dkim']['selectors'], 'several selectors: the one with a key counts' );
+Settings::update( array( 'dkim_selector' => 'nope' ) );
+$r = $check( $base + array( 'TXT selector1._domainkey.acme.test' => array( 'v=DKIM1; k=rsa; p=' . $key2048 ) ) );
+nve_ok( 'critical' === $r['checks']['dkim']['state'] && array( 'selector1' ) === $r['checks']['dkim']['suggest'] && false !== strpos( $r['checks']['dkim']['detail'], '"selector1"' ), 'no key at the selector: a common selector with a key is suggested' );
 Settings::update( array( 'dkim_selector' => '' ) );
+nve_ok( array( 'google' ) === Settings::dkim_selectors( 'google' ), 'empty setting: the provider\'s default' );
+
+// Strict SPF alignment: the account's domain must equal the sender domain.
+Settings::update( array( 'from_email' => 'info@news.acme.test' ) );
+$strict = array(
+	'TXT news.acme.test'        => array( 'v=spf1 include:_spf.google.com -all' ),
+	'TXT _dmarc.news.acme.test' => array( 'v=DMARC1; p=reject; aspf=s; adkim=s' ),
+);
+$r      = $check( $strict, 'news.acme.test' );
+nve_ok( 'critical' === $r['checks']['dmarc']['state'] && false !== strpos( $r['checks']['dmarc']['detail'], 'strict' ), 'aspf=s: SPF for another domain than the account\'s doesn\'t align' );
+$strict['TXT _dmarc.news.acme.test'] = array( 'v=DMARC1; p=reject' );
+$r                                   = $check( $strict, 'news.acme.test' );
+nve_ok( 'good' === $r['checks']['dmarc']['state'], '... relaxed alignment accepts the same organisational domain' );
+Settings::update( array( 'from_email' => '' ) );
+$r = $check( array( 'TXT acme.test' => array( 'v=spf1 redirect=spf.acme.test.eu-x1.dspf.test' ), 'TXT spf.acme.test.eu-x1.dspf.test' => array( 'v=spf1 ' . $google_ranges . ' -all' ), 'TXT _dmarc.acme.test' => array( 'v=DMARC1; p=reject; aspf=s; adkim=s' ) ) );
+nve_ok( 'good' === $r['checks']['dmarc']['state'] && 'critical' === $r['checks']['dkim']['state'], 'strict DMARC passes on a flattened SPF record alone when the account\'s domain is the sender\'s' );
 
 // Sending as an alias in another domain: SPF can't align, so DMARC needs DKIM.
 Settings::update( array( 'from_email' => 'info@brand.test' ) );

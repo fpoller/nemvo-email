@@ -534,10 +534,15 @@ class Admin {
 		$domain = isset( $_POST['domain'] ) ? strtolower( trim( sanitize_text_field( wp_unslash( $_POST['domain'] ) ) ) ) : '';
 		// phpcs:enable
 		$domain = '' !== $domain ? $domain : Mailer::from_domain();
+		$other  = 'nemvo_email_dns_other_' . get_current_user_id();
 		if ( ! preg_match( '/^(?=.{4,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/', $domain ) ) {
 			self::flash( 'error', __( 'Enter a domain name, like example.com.', 'nemvo-email' ) );
-		} else {
+		} elseif ( Mailer::from_domain() === $domain ) {
 			Dns::check( $domain, Providers::current() );
+			delete_transient( $other );
+		} else {
+			// Another domain: shown to this user for a while, without replacing the sender domain's result.
+			set_transient( $other, Dns::check( $domain, Providers::current(), false ), 10 * MINUTE_IN_SECONDS );
 		}
 		self::back( admin_url( 'admin.php?page=' . self::SLUG_SETTINGS . '#domain' ) );
 	}

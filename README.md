@@ -10,7 +10,7 @@ Sends all WordPress email through Google Workspace or Gmail with OAuth and the G
 - **A guide through the setup.** Create the OAuth client in Google Cloud (direct links, the redirect URI to copy, Internal vs External explained), sign in with Google, pick the sender, send a test email, check the domain. Each step says what to do when Google shows an error.
 - **Import from WP Mail SMTP.** Its sender settings, "Do not send" and its Gmail mailer's OAuth client and connection are imported, so a site that already sends through Gmail switches in one click.
 - **A delivery log with statistics.** Every message with its recipients, subject, the plugin or theme that sent it, size, and Gmail's message id or the exact error. The overview charts sent and failed email, the delivery rate, which plugins send, the most common types of email (subjects with their numbers grouped), recipient domains and problems; every row opens the matching messages in the log. Optionally keep message content to read it in a sandbox and resend it.
-- **SPF, DKIM and DMARC, explained.** Checks the sender domain for Google and says exactly what to publish, with copy buttons: missing or duplicate SPF records, SPF without Google or over 10 DNS lookups (includes are followed), missing, revoked or 1024-bit DKIM keys, and whether email will actually pass DMARC (an alias domain without DKIM fails, and with `p=reject` it is rejected). It names the DNS host (Cloudflare, Route 53, GoDaddy, …) and runs again every day.
+- **SPF, DKIM and DMARC, explained.** Checks the sender domain for Google and says exactly what to publish, with copy buttons. SPF is evaluated like a receiving server does (RFC 7208: `include:`, `redirect=`, `a`, `mx`, `exists`, macros, the 10-lookup limit) for Google's real mail servers over IPv4 and IPv6, so flattened and hosted records are judged right; records served by DMARC Manager (`dspf.app`) count as fine, with a note that they can't be fully checked. DKIM is checked at the selector(s) you set on the DKIM line, with common selectors suggested when there is no key. DMARC says whether email will actually pass, strict alignment included. It names the DNS host (Cloudflare, deSEC, Route 53, …) and runs again every day.
 - **Says when it breaks.** A revoked authorization, a disabled Gmail API or a missing permission shows on every admin screen and in Site Health, with what to do. A daily check finds it before an important email fails.
 - **Minimal.** Only the `gmail.send` permission (it can't read email), your own OAuth client, no tracking, no templates.
 
@@ -68,7 +68,7 @@ Everything is on **Email › Settings**. These can also come from wp-config.php 
 ```sh
 wp nemvo-email status                   # connection, sender, DNS and warnings
 wp nemvo-email test you@example.com     # send a test email
-wp nemvo-email dns [example.com]        # check SPF, DKIM, DMARC and MX
+wp nemvo-email dns [example.com] [--selector=google2026]   # check SPF, DKIM, DMARC and MX
 wp nemvo-email log --status=failed      # recent messages
 wp nemvo-email import                   # import WP Mail SMTP's settings and connection
 wp nemvo-email purge --days=30          # delete log entries older than 30 days
@@ -95,7 +95,7 @@ To try a real Google account, start the stack with `NEMVO_EMAIL_GOOGLE_MOCK=0` a
 
 ```sh
 dc="docker compose -f .devcontainer/docker-compose.yml exec -T wordpress"
-$dc wp eval-file /workspace/tests/mail-test.php   # 189 checks: wp_mail() takeover, MIME, OAuth, tokens, retries,
+$dc wp eval-file /workspace/tests/mail-test.php   # 215 checks: wp_mail() takeover, MIME, OAuth, tokens, retries,
                                                   # sender rules, log, statistics, REST, DNS, WP Mail SMTP import, Site Health
 cd tests/e2e && npm install && npm test           # real Chrome: the whole setup guide, Mailpit delivery, overview, log,
                                                   # resend, broken connection, import, dark mode, phone width
@@ -115,6 +115,14 @@ The PHP tests use an empty log table of their own and fakes for Google and DNS t
 CI runs PHP 7.4–8.4 lint, WordPress Coding Standards (with PHPCompatibilityWP), the build and Plugin Check. See [PUBLISHING.md](PUBLISHING.md) for releases and WordPress.org.
 
 ## Changelog
+
+### 1.0.1
+
+- SPF is evaluated the way receiving servers do, for Google's mail servers over IPv4 and IPv6: flattened records, `redirect=` and macros are judged correctly, and IPv4-only coverage gets a warning.
+- SPF records served by DMARC Manager (`dspf.app`) show as fine, with a note that they can't be fully checked.
+- The DKIM selector (or several) is set on the DKIM line, in the setup guide and the settings; common selectors with a key are suggested.
+- DMARC's strict alignment (`aspf=s`, `adkim=s`) is taken into account.
+- Checking another domain no longer replaces the sending domain's result.
 
 ### 1.0.0
 

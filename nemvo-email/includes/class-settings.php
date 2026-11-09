@@ -121,14 +121,32 @@ class Settings {
 	}
 
 	/**
-	 * Sanitize a DKIM selector.
+	 * Sanitize DKIM selectors: one or more, separated by commas or spaces.
+	 * A pasted record name ("s1._domainkey.example.com") becomes "s1".
 	 *
-	 * @param string $selector Selector.
-	 * @return string '' for the provider's default.
+	 * @param string $value Selectors.
+	 * @return string Comma-separated selectors; '' for the provider's default.
 	 */
-	public static function sanitize_selector( $selector ) {
-		$selector = strtolower( trim( sanitize_text_field( (string) $selector ) ) );
-		return preg_match( '/^[a-z0-9][a-z0-9._-]{0,62}$/', $selector ) ? $selector : '';
+	public static function sanitize_selector( $value ) {
+		$selectors = array();
+		foreach ( preg_split( '/[\s,;]+/', strtolower( sanitize_text_field( (string) $value ) ) ) as $selector ) {
+			$selector = preg_replace( '/\._domainkey(\..*)?$/', '', trim( $selector, " .\t" ) );
+			if ( preg_match( '/^[a-z0-9][a-z0-9._-]{0,62}$/', $selector ) ) {
+				$selectors[] = $selector;
+			}
+		}
+		return implode( ', ', array_slice( array_unique( $selectors ), 0, 5 ) );
+	}
+
+	/**
+	 * The DKIM selectors to check.
+	 *
+	 * @param string $fallback The provider's default selector.
+	 * @return string[]
+	 */
+	public static function dkim_selectors( $fallback ) {
+		$value = trim( (string) self::get( 'dkim_selector' ) );
+		return '' === $value ? array( $fallback ) : array_map( 'trim', explode( ',', $value ) );
 	}
 
 	/**

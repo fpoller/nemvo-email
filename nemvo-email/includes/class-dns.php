@@ -26,6 +26,20 @@ class Dns {
 	const SPF_LOOKUP_LIMIT = 10;
 
 	/**
+	 * Services that serve SPF records dynamically (host suffix => name). A
+	 * record that points to one counts as fine: what it serves can change
+	 * per query, so it can't be fully checked from here.
+	 */
+	const SPF_SERVICES = array(
+		'dspf.app' => 'DMARC Manager',
+	);
+
+	/**
+	 * DKIM selectors to look at when the configured one has no key.
+	 */
+	const COMMON_SELECTORS = array( 'google', 'google1', 'google2', 'google2048', 'gsuite', 'workspace', 'selector1', 'selector2', 's1', 's2', 'k1', 'default', 'dkim', 'mail', 'key1' );
+
+	/**
 	 * Lookups of the current check.
 	 *
 	 * @var array
@@ -36,8 +50,8 @@ class Dns {
 	 * Look up records.
 	 *
 	 * @param string $name Name.
-	 * @param string $type TXT | MX | NS.
-	 * @return array TXT: strings. MX: { host, pri }. NS: host names.
+	 * @param string $type TXT | MX | NS | A | AAAA.
+	 * @return array TXT: strings. MX: { host, pri }. NS: host names. A, AAAA: addresses.
 	 */
 	public static function lookup( $name, $type ) {
 		$name = strtolower( rtrim( trim( (string) $name ), '.' ) );
@@ -51,7 +65,7 @@ class Dns {
 		 *
 		 * @param array|null $records Null to look it up; otherwise the records, as lookup() returns them.
 		 * @param string     $name    Name.
-		 * @param string     $type    TXT, MX or NS.
+		 * @param string     $type    TXT, MX, NS, A or AAAA.
 		 */
 		$records = apply_filters( 'nemvo_email_pre_dns_lookup', null, $name, $type );
 		if ( null !== $records ) {
@@ -60,9 +74,11 @@ class Dns {
 		}
 
 		$types = array(
-			'TXT' => DNS_TXT,
-			'MX'  => DNS_MX,
-			'NS'  => DNS_NS,
+			'TXT'  => DNS_TXT,
+			'MX'   => DNS_MX,
+			'NS'   => DNS_NS,
+			'A'    => DNS_A,
+			'AAAA' => DNS_AAAA,
 		);
 		$out   = array();
 		if ( '' !== $name && isset( $types[ $type ] ) && function_exists( 'dns_get_record' ) ) {
@@ -79,6 +95,10 @@ class Dns {
 						'host' => strtolower( rtrim( (string) $record['target'], '.' ) ),
 						'pri'  => (int) $record['pri'],
 					);
+				} elseif ( 'A' === $type ) {
+					$out[] = (string) ( $record['ip'] ?? '' );
+				} elseif ( 'AAAA' === $type ) {
+					$out[] = (string) ( $record['ipv6'] ?? '' );
 				} else {
 					$out[] = strtolower( rtrim( (string) $record['target'], '.' ) );
 				}
@@ -113,8 +133,7 @@ class Dns {
 		$profile     = $provider->dns_profile();
 		$account     = $provider->account();
 		$from        = Mailer::from_email( $provider );
-		$selector    = (string) Settings::get( 'dkim_selector' );
-		$selector    = '' !== $selector ? $selector : $profile['dkim_selector'];
+		$selectors   = Settings::dkim_selectors( $profile['dkim_selector'] );
 		$personal    = in_array( $domain, $profile['personal_domains'], true );
 
 		$result = array(
@@ -134,8 +153,8 @@ class Dns {
 		if ( ! $personal ) {
 			$account_domain = strtolower( (string) substr( (string) strrchr( $account, '@' ), 1 ) );
 			$contact        = '' !== $account && self::org_domain( $account_domain ) === self::org_domain( $domain ) ? $account : $from;
-			$spf            = self::spf( $domain, $profile['spf_include'] );
-			$dkim           = self::dkim( $domain, $selector, $profile, $provider );
+			$spf            = self::spf( $domain, $profile, '' !== $from ? $from : 'postmaster@' . $domain );
+			$dkim           = self::dkim( $domain, $selectors, $profile, $provider );
 			$dmarc          = self::dmarc( $domain, $spf, $dkim, $account_domain, $contact );
 			$mx             = self::mx( $domain, $profile['mx'] );
 
@@ -192,17 +211,23 @@ class Dns {
 	}
 
 	/**
-	 * Check SPF.
+	 * Check SPF: evaluated the way receivers do, for the provider's real
+	 * sending addresses, so include:, redirect=, records that list the
+	 * addresses directly and records flattened by an SPF or DMARC service all
+	 * count.
 	 *
 	 * @param string $domain  Domain.
-	 * @param string $spf_include The provider's include.
+	 * @param array  $profile Provider DNS profile.
+	 * @param string $sender  Envelope sender, for SPF macros.
 	 * @return array
 	 */
-	private static function spf( $domain, $spf_include ) {
-		$records = self::spf_records( $domain );
-		$base    = array(
+	private static function spf( $domain, array $profile, $sender ) {
+		$spf_include = $profile['spf_include'];
+		$records     = self::spf_records( $domain );
+		$base        = array(
 			'label' => 'SPF',
 			'found' => $records,
+			'pass'  => false,
 		);
 
 		if ( ! $records ) {
@@ -236,18 +261,78 @@ class Dns {
 			);
 		}
 
-		$record       = $records[0];
-		$lookups      = 0;
-		$found        = self::spf_walk( $record, $spf_include, $lookups, 0 );
+		$record  = $records[0];
+		$lookups = 0;
+		$direct  = self::spf_walk( $record, $spf_include, $lookups, 0 );
+		$results = array();
+		$error   = '';
+		foreach ( $profile['sending_ips'] as $ip ) {
+			$evaluation     = Spf::evaluate( $ip, $domain, $sender, $profile['helo'] );
+			$results[ $ip ] = $evaluation['result'];
+			$error          = '' !== $error ? $error : $evaluation['error'];
+		}
+		$v4 = array();
+		$v6 = array();
+		foreach ( $results as $ip => $result ) {
+			if ( Spf::is_ipv6( $ip ) ) {
+				$v6[ $ip ] = $result;
+			} else {
+				$v4[ $ip ] = $result;
+			}
+		}
+		$pass4        = $v4 && array( 'pass' ) === array_values( array_unique( $v4 ) );
+		$pass6        = ! $v6 || array( 'pass' ) === array_values( array_unique( $v6 ) );
 		$all          = preg_match( '/(?:^|\s)([+?~-]?)all(?:\s|$)/i', $record, $m ) ? ( '' === $m[1] ? '+' : $m[1] ) : '';
 		$has_redirect = (bool) preg_match( '/(?:^|\s)redirect=/i', $record );
+		$managed      = ! $direct && (bool) preg_match( '/(?:^|\s)(?:redirect=|[+?~-]?(?:include|exists):)|%\{/i', $record );
+		$hint         = $managed ? ' ' . __( 'The record points to a service that manages it (with redirect=, include: or macros). If that service builds your SPF record, add Google Workspace as a sender there instead of editing DNS.', 'nemvo-email' ) : '';
+		$base         = array_merge(
+			$base,
+			array(
+				'pass'    => $pass4,
+				'results' => $results,
+				'lookups' => $lookups,
+			)
+		);
+		/* translators: %d: number of lookups */
+		$lookup_text = sprintf( _n( 'The record needs %d DNS lookup of the 10 allowed.', 'The record needs %d DNS lookups of the 10 allowed.', $lookups, 'nemvo-email' ), $lookups );
 
-		if ( ! $found ) {
+		$service = self::spf_service( $record );
+		if ( $service ) {
+			$other = array_values( array_diff( $results, array( 'pass' ) ) );
+			return array_merge( $base, array( 'pass' => true ) ) + array(
+				'state'  => 'good',
+				/* translators: 1: domain, 2: service name, like DMARC Manager */
+				'title'  => sprintf( __( 'SPF for %1$s is managed by %2$s', 'nemvo-email' ), $domain, $service['name'] ),
+				/* translators: %s: host name the record points to */
+				'detail' => sprintf( __( 'The record points to %s, which serves it.', 'nemvo-email' ), $service['host'] ) . ' '
+					. ( $other
+						/* translators: %s: SPF result like "fail" */
+						? sprintf( __( 'Checked from here, Google\'s mail servers get "%s"; the service may answer receivers differently.', 'nemvo-email' ), $other[0] )
+						: __( 'Checked from here, Google\'s mail servers pass.', 'nemvo-email' ) ),
+				/* translators: %s: service name */
+				'notice' => sprintf( __( '%s can change the record for each query, so it can\'t be fully checked from here. Make sure Google Workspace is listed as a sender there.', 'nemvo-email' ), $service['name'] ),
+			);
+		}
+
+		if ( in_array( 'permerror', $results, true ) ) {
+			return $base + array(
+				'state'  => 'critical',
+				/* translators: 1: domain, 2: reason, like "more than 10 DNS lookups" */
+				'title'  => sprintf( __( 'SPF for %1$s is broken: %2$s', 'nemvo-email' ), $domain, $error ),
+				'detail' => __( 'Receivers treat a broken SPF record as if there were none, so email sent through Google fails SPF. Each include, a, mx, exists and redirect counts as a lookup, including the ones inside includes.', 'nemvo-email' ) . $hint,
+			);
+		}
+
+		if ( ! $pass4 ) {
+			$first = (string) array_key_first( $v4 );
 			return $base + array(
 				'state'  => 'critical',
 				/* translators: %s: domain */
-				'title'  => sprintf( __( 'SPF for %s doesn\'t include Google', 'nemvo-email' ), $domain ),
-				'detail' => __( 'Your SPF record lists other servers but not Google\'s, so email sent through Google fails SPF. Change the record to:', 'nemvo-email' ),
+				'title'  => sprintf( __( 'SPF for %s doesn\'t allow Google\'s mail servers', 'nemvo-email' ), $domain ),
+				/* translators: 1: an address of Google's mail servers, 2: SPF result like "fail" */
+				'detail' => sprintf( __( 'Checked the way receivers do: for Google\'s mail servers (like %1$s) the result is "%2$s", so email sent through Google fails SPF.', 'nemvo-email' ), $first, $v4[ $first ] )
+					. $hint . ' ' . ( $managed ? __( 'Or change the record to:', 'nemvo-email' ) : __( 'Change the record to:', 'nemvo-email' ) ),
 				'fix'    => array(
 					'type'  => 'TXT',
 					'name'  => $domain,
@@ -256,12 +341,29 @@ class Dns {
 				),
 			);
 		}
+
+		if ( ! $pass6 ) {
+			return $base + array(
+				'state'  => 'warning',
+				/* translators: %s: domain */
+				'title'  => sprintf( __( 'SPF for %s allows Google\'s IPv4 mail servers, not IPv6', 'nemvo-email' ), $domain ),
+				'detail' => __( 'Gmail delivers over IPv6 to receivers that support it, such as Gmail and Outlook, and those messages fail SPF. include:_spf.google.com covers both.', 'nemvo-email' ) . $hint,
+			) + ( $managed ? array() : array(
+				'fix' => array(
+					'type'  => 'TXT',
+					'name'  => $domain,
+					'value' => self::spf_add( $record, $spf_include ),
+					'mode'  => 'replace',
+				),
+			) );
+		}
+
 		if ( $lookups > self::SPF_LOOKUP_LIMIT ) {
 			return $base + array(
-				'state'  => 'critical',
+				'state'  => 'warning',
 				/* translators: %d: number of lookups */
-				'title'  => sprintf( __( 'SPF needs %d DNS lookups; the limit is 10', 'nemvo-email' ), $lookups ),
-				'detail' => __( 'Receivers stop after 10 lookups (each include, a, mx and redirect counts, including the ones inside includes) and treat SPF as broken. Remove includes for services you no longer send with.', 'nemvo-email' ),
+				'title'  => sprintf( __( 'Google passes, but SPF needs %d DNS lookups; the limit is 10', 'nemvo-email' ), $lookups ),
+				'detail' => __( 'Receivers stop after 10 lookups, so servers listed after that fail SPF (including the ones inside includes). Remove includes for services you no longer send with.', 'nemvo-email' ),
 			);
 		}
 		if ( '+' === $all || '?' === $all ) {
@@ -297,9 +399,36 @@ class Dns {
 			'state'  => 'good',
 			/* translators: %s: domain */
 			'title'  => sprintf( __( 'SPF allows Google to send for %s', 'nemvo-email' ), $domain ),
-			/* translators: %d: number of lookups */
-			'detail' => sprintf( _n( 'The record needs %d DNS lookup of the 10 allowed.', 'The record needs %d DNS lookups of the 10 allowed.', $lookups, 'nemvo-email' ), $lookups ),
+			/* translators: %s: addresses of Google's mail servers */
+			'detail' => sprintf( __( 'Checked the way receivers do: Google\'s mail servers (%s) pass.', 'nemvo-email' ), implode( ', ', array_keys( $results ) ) )
+				. ( $direct ? '' : ' ' . __( 'Google\'s addresses are listed in the record itself (flattened): it has to change when Google\'s do, which services that flatten SPF take care of.', 'nemvo-email' ) )
+				. ' ' . $lookup_text,
 		);
+	}
+
+	/**
+	 * The SPF service a record points to with redirect= or include:, if it
+	 * is one of SPF_SERVICES.
+	 *
+	 * @param string $record SPF record.
+	 * @return array|null { name, host }
+	 */
+	private static function spf_service( $record ) {
+		if ( ! preg_match_all( '/(?:^|\s)(?:redirect=|[+?~-]?include:)(\S+)/i', $record, $m ) ) {
+			return null;
+		}
+		foreach ( $m[1] as $target ) {
+			$target = strtolower( rtrim( $target, '.' ) );
+			foreach ( self::SPF_SERVICES as $suffix => $name ) {
+				if ( $target === $suffix || substr( $target, -strlen( '.' . $suffix ) ) === '.' . $suffix ) {
+					return array(
+						'name' => $name,
+						'host' => $target,
+					);
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -390,81 +519,133 @@ class Dns {
 	 */
 
 	/**
-	 * Check the DKIM key.
+	 * DKIM records with a key at a selector.
 	 *
-	 * @param string   $domain   Domain.
-	 * @param string   $selector Selector.
-	 * @param array    $profile  Provider DNS profile.
-	 * @param Provider $provider Provider.
-	 * @return array
+	 * @param string $selector Selector.
+	 * @param string $domain   Domain.
+	 * @return string[]
 	 */
-	private static function dkim( $domain, $selector, array $profile, Provider $provider ) {
-		$name             = $selector . '._domainkey.' . $domain;
-		$records          = array_values(
+	private static function dkim_records( $selector, $domain ) {
+		return array_values(
 			array_filter(
-				array_map( 'trim', self::lookup( $name, 'TXT' ) ),
+				array_map( 'trim', self::lookup( $selector . '._domainkey.' . $domain, 'TXT' ) ),
 				static function ( $txt ) {
 					return (bool) preg_match( '/(^|;)\s*p=/i', $txt );
 				}
 			)
 		);
-		$base             = array(
-			'label'    => 'DKIM',
-			'selector' => $selector,
-			'name'     => $name,
-			'found'    => array_map( array( __CLASS__, 'shorten_key' ), $records ),
-		);
-		$personal_account = $provider->is_personal();
+	}
 
-		if ( ! $records ) {
-			$steps = array(
+	/**
+	 * Check the DKIM key at the configured selectors. When there is none,
+	 * look at a few common selectors and suggest the ones that have a key.
+	 *
+	 * @param string   $domain    Domain.
+	 * @param string[] $selectors Selectors.
+	 * @param array    $profile   Provider DNS profile.
+	 * @param Provider $provider  Provider.
+	 * @return array
+	 */
+	private static function dkim( $domain, array $selectors, array $profile, Provider $provider ) {
+		$found = array();
+		foreach ( $selectors as $selector ) {
+			$records = self::dkim_records( $selector, $domain );
+			if ( $records ) {
+				$found[ $selector ] = $records[0];
+			}
+		}
+		$first = $selectors[0];
+		$base  = array(
+			'label'     => 'DKIM',
+			'selector'  => implode( ', ', $selectors ),
+			'selectors' => $selectors,
+			'name'      => $first . '._domainkey.' . $domain,
+			'found'     => array_map( array( __CLASS__, 'shorten_key' ), array_values( $found ) ),
+			'suggest'   => array(),
+		);
+
+		if ( ! $found ) {
+			$suggest = array();
+			foreach ( self::COMMON_SELECTORS as $candidate ) {
+				if ( ! in_array( $candidate, $selectors, true ) && self::dkim_records( $candidate, $domain ) ) {
+					$suggest[] = $candidate;
+				}
+				if ( count( $suggest ) >= 3 ) {
+					break;
+				}
+			}
+			$quoted = '"' . implode( '", "', $selectors ) . '"';
+			$steps  = array(
 				/* translators: %s: link to the Google Admin console */
 				sprintf( __( 'Open %s in the Google Admin console (Apps › Google Workspace › Gmail › Authenticate email).', 'nemvo-email' ), '<a href="' . esc_url( $profile['dkim_url'] ) . '" target="_blank" rel="noopener">' . esc_html__( 'Authenticate email', 'nemvo-email' ) . '</a>' ),
 				/* translators: 1: domain, 2: selector */
-				sprintf( __( 'Choose %1$s, then Generate new record with a 2048-bit key and the prefix selector "%2$s".', 'nemvo-email' ), '<strong>' . esc_html( $domain ) . '</strong>', esc_html( $selector ) ),
+				sprintf( __( 'Choose %1$s, then Generate new record with a 2048-bit key and the prefix selector "%2$s".', 'nemvo-email' ), '<strong>' . esc_html( $domain ) . '</strong>', esc_html( $first ) ),
 				/* translators: %s: DNS name */
-				sprintf( __( 'Publish the TXT record Google shows, at %s, with your DNS provider.', 'nemvo-email' ), '<code>' . esc_html( $name ) . '</code>' ),
+				sprintf( __( 'Publish the TXT record Google shows, at %s, with your DNS provider.', 'nemvo-email' ), '<code>' . esc_html( $base['name'] ) . '</code>' ),
 				__( 'Back in the Admin console, click Start authentication once the record is visible (usually within an hour), then check again here.', 'nemvo-email' ),
 			);
-			return $base + array(
-				'state'  => 'critical',
-				/* translators: %s: domain */
-				'title'  => sprintf( __( 'Google doesn\'t sign email for %s with DKIM', 'nemvo-email' ), $domain ),
-				'detail' => $personal_account
-					? __( 'A personal Gmail account can\'t sign email for your own domain. Receivers can\'t verify it, and DMARC fails unless SPF aligns. Use a Google Workspace account for this domain.', 'nemvo-email' )
-					/* translators: %s: selector */
-					: sprintf( __( 'No DKIM key was found for the selector "%s". Without your own DKIM signature, Google signs with a google.com domain, which doesn\'t count for DMARC. Set it up in four steps:', 'nemvo-email' ), $selector ),
-				'steps'  => $personal_account ? array() : $steps,
+			if ( $provider->is_personal() ) {
+				$detail = __( 'A personal Gmail account can\'t sign email for your own domain. Receivers can\'t verify it, and DMARC fails unless SPF aligns. Use a Google Workspace account for this domain.', 'nemvo-email' );
+			} elseif ( $suggest ) {
+				/* translators: 1: selectors checked, 2: selectors that have a key */
+				$detail = sprintf( __( 'No DKIM key at the selector %1$s, but there is one at %2$s. If Google Workspace signs with that selector (the prefix chosen in the Admin console), use it. Otherwise set DKIM up in four steps:', 'nemvo-email' ), $quoted, '"' . implode( '", "', $suggest ) . '"' );
+			} else {
+				/* translators: %s: selectors checked */
+				$detail = sprintf( __( 'No DKIM key at the selector %s. If Google Workspace already signs with another selector (the prefix chosen in the Admin console when the key was generated), enter it below. Otherwise set it up in four steps; without your own DKIM signature, Google signs with a google.com domain, which doesn\'t count for DMARC:', 'nemvo-email' ), $quoted );
+			}
+			return array_merge(
+				$base,
+				array(
+					'state'   => 'critical',
+					/* translators: %s: domain */
+					'title'   => sprintf( __( 'Google doesn\'t sign email for %s with DKIM', 'nemvo-email' ), $domain ),
+					'detail'  => $detail,
+					'steps'   => $provider->is_personal() ? array() : $steps,
+					'suggest' => $suggest,
+				)
 			);
 		}
 
-		$tags = self::tags( $records[0] );
-		if ( '' === ( $tags['p'] ?? '' ) ) {
+		// The strongest key among the selectors that have one.
+		$best = null;
+		foreach ( $found as $selector => $record ) {
+			$tags = self::tags( $record );
+			$bits = '' === ( $tags['p'] ?? '' ) ? -1 : self::key_bits( $tags['p'] );
+			if ( null === $best || $bits > $best['bits'] ) {
+				$best = array(
+					'selector' => $selector,
+					'bits'     => $bits,
+				);
+			}
+		}
+		$base['name']   = $best['selector'] . '._domainkey.' . $domain;
+		$base['active'] = $best['selector'];
+
+		if ( -1 === $best['bits'] ) {
 			return $base + array(
 				'state'  => 'critical',
 				/* translators: %s: DNS name */
-				'title'  => sprintf( __( 'The DKIM key at %s is revoked', 'nemvo-email' ), $name ),
+				'title'  => sprintf( __( 'The DKIM key at %s is revoked', 'nemvo-email' ), $base['name'] ),
 				'detail' => __( 'The record has an empty key (p=), which means "no longer valid". Generate a new record in the Google Admin console and publish it.', 'nemvo-email' ),
 			);
 		}
-		$bits = self::key_bits( $tags['p'] );
-		if ( $bits && $bits < 2048 ) {
+		if ( $best['bits'] && $best['bits'] < 2048 ) {
 			return $base + array(
 				'state'  => 'warning',
-				'bits'   => $bits,
-				/* translators: %d: key size */
-				'title'  => sprintf( __( 'DKIM works, with a %d-bit key', 'nemvo-email' ), $bits ),
+				'bits'   => $best['bits'],
+				/* translators: 1: key size, 2: selector */
+				'title'  => sprintf( __( 'DKIM works, with a %1$d-bit key (selector "%2$s")', 'nemvo-email' ), $best['bits'], $best['selector'] ),
 				'detail' => __( '2048 bits is the current recommendation. In the Google Admin console, generate a new 2048-bit record, publish it, and click Start authentication again.', 'nemvo-email' ),
 			);
 		}
 		return $base + array(
 			'state'  => 'good',
-			'bits'   => $bits,
-			'title'  => $bits
-				/* translators: 1: domain, 2: key size */
-				? sprintf( __( 'DKIM key published for %1$s (%2$d-bit)', 'nemvo-email' ), $domain, $bits )
-				/* translators: %s: domain */
-				: sprintf( __( 'DKIM key published for %s', 'nemvo-email' ), $domain ),
+			'bits'   => $best['bits'],
+			'title'  => $best['bits']
+				/* translators: 1: domain, 2: selector, 3: key size */
+				? sprintf( __( 'DKIM key published for %1$s (selector "%2$s", %3$d-bit)', 'nemvo-email' ), $domain, $best['selector'], $best['bits'] )
+				/* translators: 1: domain, 2: selector */
+				: sprintf( __( 'DKIM key published for %1$s (selector "%2$s")', 'nemvo-email' ), $domain, $best['selector'] ),
 			'detail' => __( 'Make sure Start authentication is on in the Google Admin console (Gmail › Authenticate email): the record alone doesn\'t turn signing on.', 'nemvo-email' ),
 		);
 	}
@@ -534,11 +715,7 @@ class Dns {
 			'found' => $records,
 		);
 
-		// DMARC passes when SPF or DKIM passes for a domain aligned with the sender's.
-		$spf_aligned  = 'critical' !== $spf['state'] && '' !== $account_domain && self::org_domain( $account_domain ) === self::org_domain( $domain );
-		$dkim_aligned = 'critical' !== $dkim['state'];
-		$passes       = $spf_aligned || $dkim_aligned;
-		$contact      = '' !== $contact ? $contact : 'postmaster@' . $domain;
+		$contact = '' !== $contact ? $contact : 'postmaster@' . $domain;
 
 		if ( ! $records ) {
 			return $base + array(
@@ -579,10 +756,26 @@ class Dns {
 			);
 		}
 
+		/*
+		 * DMARC passes when SPF or DKIM passes for a domain aligned with the
+		 * sender's: the same organisational domain, or exactly the same with
+		 * aspf=s / adkim=s. Gmail's envelope sender is the account's address;
+		 * the DKIM key checked above is the sender domain's own.
+		 */
+		$strict_spf   = 's' === strtolower( $tags['aspf'] ?? 'r' );
+		$strict_dkim  = 's' === strtolower( $tags['adkim'] ?? 'r' );
+		$spf_aligned  = ! empty( $spf['pass'] ) && '' !== $account_domain && ( $strict_spf ? $account_domain === $domain : self::org_domain( $account_domain ) === self::org_domain( $domain ) );
+		$dkim_aligned = in_array( $dkim['state'], array( 'good', 'warning' ), true );
+		$passes       = $spf_aligned || $dkim_aligned;
+
 		$reports = '';
+		if ( $strict_spf || $strict_dkim ) {
+			/* translators: %s: tags like "aspf=s, adkim=s" */
+			$reports .= ' ' . sprintf( __( 'Alignment is strict (%s): the sending domains must match exactly.', 'nemvo-email' ), implode( ', ', array_filter( array( $strict_spf ? 'aspf=s' : '', $strict_dkim ? 'adkim=s' : '' ) ) ) );
+		}
 		if ( ! empty( $tags['rua'] ) ) {
 			/* translators: %s: report addresses */
-			$reports = ' ' . sprintf( __( 'Reports go to %s.', 'nemvo-email' ), str_replace( 'mailto:', '', $tags['rua'] ) );
+			$reports .= ' ' . sprintf( __( 'Reports go to %s.', 'nemvo-email' ), str_replace( 'mailto:', '', $tags['rua'] ) );
 		}
 		$base['policy'] = $policy;
 

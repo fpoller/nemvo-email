@@ -332,7 +332,10 @@ $needs_connection = static function () use ( $continue ) {
 					<?php $needs_connection(); ?>
 				<?php else : ?>
 					<p class="nve-lead"><?php esc_html_e( 'Receivers check three DNS records to tell your email from forgeries: SPF (which servers may send), DKIM (a signature) and DMARC (what to do with failures). Without them, email lands in spam or is rejected.', 'nemvo-email' ); ?></p>
-					<?php require NEMVO_EMAIL_DIR . 'templates/partials/dns.php'; ?>
+					<?php
+					$dns_back = Admin::setup_url( 'domain' );
+					require NEMVO_EMAIL_DIR . 'templates/partials/dns.php';
+					?>
 					<div class="nve-actions">
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 							<input type="hidden" name="action" value="nemvo_email_dns">
