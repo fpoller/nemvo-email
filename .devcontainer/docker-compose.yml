@@ -1,0 +1,89 @@
+# Development stack for Nemvo Email.
+#
+#   WordPress   http://localhost:8060  (admin / admin)
+#   Mailpit     http://localhost:8065  (every email the fake Gmail API "sends" lands here)
+#
+# The plugin folder is mounted live, so edits take effect without a build.
+#
+# With NEMVO_EMAIL_GOOGLE_MOCK=1 (the default) Google is simulated: the OAuth consent screen
+# is skipped, tokens are made up, and messages sent through the "Gmail API" are delivered
+# to Mailpit over SMTP, exactly as built. Start with NEMVO_EMAIL_GOOGLE_MOCK=0 to use a real
+# Google Cloud OAuth client (Google accepts http://localhost redirect URIs).
+#
+# Ports can be changed with WP_PORT and MAILPIT_PORT.
+
+name: nemvo-email
+
+x-wordpress-env: &wp-env
+  WORDPRESS_DB_HOST: db
+  WORDPRESS_DB_NAME: wordpress
+  WORDPRESS_DB_USER: wordpress
+  WORDPRESS_DB_PASSWORD: wordpress
+  WORDPRESS_DEBUG: "1"
+  WORDPRESS_CONFIG_EXTRA: |
+    define( 'WP_ENVIRONMENT_TYPE', 'local' );
+    define( 'WP_DEBUG_LOG', true );
+    define( 'WP_DEBUG_DISPLAY', false );
+  NEMVO_EMAIL_GOOGLE_MOCK: "${NEMVO_EMAIL_GOOGLE_MOCK:-1}"
+  WP_PORT: "${WP_PORT:-8060}"
+  MAILPIT_PORT: "${MAILPIT_PORT:-8065}"
+  WP_CLI_CACHE_DIR: /tmp/wp-cli-cache
+
+x-wordpress-volumes: &wp-volumes
+  - wordpress:/var/www/html
+  - ../nemvo-email:/var/www/html/wp-content/plugins/nemvo-email
+  - ./mu-plugins:/var/www/html/wp-content/mu-plugins
+  - ..:/workspace:cached
+
+services:
+  wordpress:
+    image: wordpress:php8.3-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${WP_PORT:-8060}:80"
+    environment: *wp-env
+    volumes:
+      - wordpress:/var/www/html
+      - ../nemvo-email:/var/www/html/wp-content/plugins/nemvo-email
+      - ./mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ..:/workspace:cached
+      - ./apache-dev-port.conf:/etc/apache2/sites-enabled/001-dev-port.conf:ro
+
+  # One-off WP-CLI commands: docker compose -f .devcontainer/docker-compose.yml run --rm cli wp <command>
+  cli:
+    image: wordpress:cli-php8.3
+    profiles: ["cli"]
+    user: "33:33"
+    depends_on:
+      - wordpress
+    environment: *wp-env
+    volumes: *wp-volumes
+
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+    volumes:
+      - db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_PORT:-8065}:8025"
+
+volumes:
+  wordpress:
+  db:

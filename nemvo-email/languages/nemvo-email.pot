@@ -1,0 +1,2088 @@
+# Copyright (C) 2026 Nemvo
+# This file is distributed under the MIT.
+msgid ""
+msgstr ""
+"Project-Id-Version: Nemvo Email 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/fpoller/nemvo-email/issues\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-09T19:34:38+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: nemvo-email\n"
+
+#. Plugin Name of the plugin
+#: nemvo-email.php
+msgid "Nemvo Email"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: nemvo-email.php
+msgid "https://github.com/fpoller/nemvo-email"
+msgstr ""
+
+#. Description of the plugin
+#: nemvo-email.php
+msgid "Sends all WordPress email through Google Workspace or Gmail with OAuth, instead of the web server. Guided setup, a delivery log with statistics, SPF, DKIM and DMARC checks, and import from WP Mail SMTP."
+msgstr ""
+
+#. Author of the plugin
+#: nemvo-email.php
+msgid "Nemvo"
+msgstr ""
+
+#. Author URI of the plugin
+#: nemvo-email.php
+msgid "https://nemvo.eu"
+msgstr ""
+
+#. translators: %d: number of messages
+#: includes/class-admin.php:59
+#, php-format
+msgid "%d failed email in the last 24 hours"
+msgid_plural "%d failed emails in the last 24 hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-admin.php:61
+#: includes/class-admin.php:200
+#: includes/class-health.php:269
+#: templates/header.php:30
+msgid "Email"
+msgstr ""
+
+#: includes/class-admin.php:63
+msgid "Email overview"
+msgstr ""
+
+#: includes/class-admin.php:63
+#: templates/header.php:17
+msgid "Overview"
+msgstr ""
+
+#: includes/class-admin.php:64
+#: templates/setup.php:104
+msgid "Set up email"
+msgstr ""
+
+#: includes/class-admin.php:64
+#: includes/class-admin.php:98
+#: templates/header.php:22
+msgid "Set up"
+msgstr ""
+
+#: includes/class-admin.php:65
+#: includes/class-admin.php:200
+#: includes/class-privacy.php:35
+#: includes/class-privacy.php:49
+msgid "Email log"
+msgstr ""
+
+#: includes/class-admin.php:65
+#: templates/header.php:18
+msgid "Log"
+msgstr ""
+
+#: includes/class-admin.php:66
+#: templates/settings.php:80
+msgid "Email settings"
+msgstr ""
+
+#: includes/class-admin.php:66
+#: includes/class-admin.php:98
+#: templates/header.php:19
+msgid "Settings"
+msgstr ""
+
+#: includes/class-admin.php:307
+msgid "Nemvo Email is active."
+msgstr ""
+
+#: includes/class-admin.php:309
+msgid "Your WP Mail SMTP settings can be imported in the first step of the setup."
+msgstr ""
+
+#: includes/class-admin.php:310
+msgid "WordPress keeps sending email the way it did until you connect Google Workspace. Setup takes about ten minutes."
+msgstr ""
+
+#: includes/class-admin.php:312
+#: includes/class-health.php:123
+#: templates/partials/status.php:93
+msgid "Start setup"
+msgstr ""
+
+#. translators: %s: provider
+#: includes/class-admin.php:323
+#, php-format
+msgid "Email from this site is not being delivered: %s refuses the connection."
+msgstr ""
+
+#: includes/class-admin.php:326
+#: includes/class-health.php:112
+#: templates/partials/status.php:91
+msgid "Fix the connection"
+msgstr ""
+
+#: includes/class-admin.php:343
+#: includes/class-admin.php:419
+msgid "Sorry, you are not allowed to change email settings."
+msgstr ""
+
+#: includes/class-admin.php:385
+msgid "OAuth client saved. Now connect the Google account that should send the email."
+msgstr ""
+
+#: includes/class-admin.php:396
+#: templates/setup.php:241
+msgid "Enter the OAuth client ID and secret first."
+msgstr ""
+
+#. translators: %s: account
+#: includes/class-admin.php:442
+#, php-format
+msgid "Connected. WordPress now sends email as %s."
+msgstr ""
+
+#: includes/class-admin.php:460
+msgid "Disconnected. WordPress sends email from the web server again until you connect an account."
+msgstr ""
+
+#: includes/class-admin.php:473
+msgid "The connection works: Google accepts messages from this site."
+msgstr ""
+
+#: includes/class-admin.php:486
+msgid "The From address isn't a valid email address."
+msgstr ""
+
+#: includes/class-admin.php:498
+msgid "Sender saved."
+msgstr ""
+
+#: includes/class-admin.php:513
+msgid "Settings saved."
+msgstr ""
+
+#: includes/class-admin.php:538
+msgid "Enter a domain name, like example.com."
+msgstr ""
+
+#. translators: %s: list of imported settings
+#: includes/class-admin.php:557
+#, php-format
+msgid "Imported from WP Mail SMTP: %s."
+msgstr ""
+
+#: includes/class-admin.php:558
+msgid "WP Mail SMTP had nothing to import."
+msgstr ""
+
+#. translators: %s: account
+#: includes/class-admin.php:563
+#, php-format
+msgid "The Gmail connection works: WordPress now sends email as %s."
+msgstr ""
+
+#. translators: %s: error
+#: includes/class-admin.php:568
+#, php-format
+msgid "The imported Gmail connection doesn't work: %s"
+msgstr ""
+
+#: includes/class-admin.php:583
+msgid "Sorry, you are not allowed to deactivate plugins."
+msgstr ""
+
+#: includes/class-admin.php:586
+msgid "WP Mail SMTP is deactivated. Its settings are kept, so you can switch back at any time."
+msgstr ""
+
+#: includes/class-admin.php:607
+msgid "The log is empty."
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:212
+#, php-format
+msgid "%s has no SPF record"
+msgstr ""
+
+#: includes/class-dns.php:213
+msgid "SPF lists the servers allowed to send email for your domain. Without it, receivers can't tell your email from forgeries. Add this record:"
+msgstr ""
+
+#. translators: 1: domain, 2: number of records
+#: includes/class-dns.php:228
+#, php-format
+msgid "%1$s has %2$d SPF records"
+msgstr ""
+
+#: includes/class-dns.php:229
+msgid "A domain may have only one SPF record; with several, receivers treat SPF as broken. Replace them with this single record:"
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:249
+#, php-format
+msgid "SPF for %s doesn't include Google"
+msgstr ""
+
+#: includes/class-dns.php:250
+msgid "Your SPF record lists other servers but not Google's, so email sent through Google fails SPF. Change the record to:"
+msgstr ""
+
+#. translators: %d: number of lookups
+#: includes/class-dns.php:263
+#, php-format
+msgid "SPF needs %d DNS lookups; the limit is 10"
+msgstr ""
+
+#: includes/class-dns.php:264
+msgid "Receivers stop after 10 lookups (each include, a, mx and redirect counts, including the ones inside includes) and treat SPF as broken. Remove includes for services you no longer send with."
+msgstr ""
+
+#. translators: %s: the all mechanism, e.g. +all
+#: includes/class-dns.php:271
+#, php-format
+msgid "SPF ends with %s"
+msgstr ""
+
+#: includes/class-dns.php:273
+msgid "\"+all\" allows every server in the world to send as your domain, which makes SPF useless. End the record with ~all instead:"
+msgstr ""
+
+#: includes/class-dns.php:274
+msgid "\"?all\" says nothing about servers that aren't listed. End the record with ~all instead:"
+msgstr ""
+
+#: includes/class-dns.php:286
+msgid "SPF has no ending"
+msgstr ""
+
+#: includes/class-dns.php:287
+msgid "Without \"~all\" (or \"-all\") at the end, servers that aren't listed are neither allowed nor refused. Change the record to:"
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:299
+#, php-format
+msgid "SPF allows Google to send for %s"
+msgstr ""
+
+#. translators: %d: number of lookups
+#: includes/class-dns.php:301
+#, php-format
+msgid "The record needs %d DNS lookup of the 10 allowed."
+msgid_plural "The record needs %d DNS lookups of the 10 allowed."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: link to the Google Admin console
+#: includes/class-dns.php:422
+#, php-format
+msgid "Open %s in the Google Admin console (Apps › Google Workspace › Gmail › Authenticate email)."
+msgstr ""
+
+#. translators: %s: link to the Google Admin console
+#: includes/class-dns.php:422
+msgid "Authenticate email"
+msgstr ""
+
+#. translators: 1: domain, 2: selector
+#: includes/class-dns.php:424
+#, php-format
+msgid "Choose %1$s, then Generate new record with a 2048-bit key and the prefix selector \"%2$s\"."
+msgstr ""
+
+#. translators: %s: DNS name
+#: includes/class-dns.php:426
+#, php-format
+msgid "Publish the TXT record Google shows, at %s, with your DNS provider."
+msgstr ""
+
+#: includes/class-dns.php:427
+msgid "Back in the Admin console, click Start authentication once the record is visible (usually within an hour), then check again here."
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:432
+#, php-format
+msgid "Google doesn't sign email for %s with DKIM"
+msgstr ""
+
+#: includes/class-dns.php:434
+msgid "A personal Gmail account can't sign email for your own domain. Receivers can't verify it, and DMARC fails unless SPF aligns. Use a Google Workspace account for this domain."
+msgstr ""
+
+#. translators: %s: selector
+#: includes/class-dns.php:436
+#, php-format
+msgid "No DKIM key was found for the selector \"%s\". Without your own DKIM signature, Google signs with a google.com domain, which doesn't count for DMARC. Set it up in four steps:"
+msgstr ""
+
+#. translators: %s: DNS name
+#: includes/class-dns.php:446
+#, php-format
+msgid "The DKIM key at %s is revoked"
+msgstr ""
+
+#: includes/class-dns.php:447
+msgid "The record has an empty key (p=), which means \"no longer valid\". Generate a new record in the Google Admin console and publish it."
+msgstr ""
+
+#. translators: %d: key size
+#: includes/class-dns.php:456
+#, php-format
+msgid "DKIM works, with a %d-bit key"
+msgstr ""
+
+#: includes/class-dns.php:457
+msgid "2048 bits is the current recommendation. In the Google Admin console, generate a new 2048-bit record, publish it, and click Start authentication again."
+msgstr ""
+
+#. translators: 1: domain, 2: key size
+#: includes/class-dns.php:465
+#, php-format
+msgid "DKIM key published for %1$s (%2$d-bit)"
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:467
+#, php-format
+msgid "DKIM key published for %s"
+msgstr ""
+
+#: includes/class-dns.php:468
+msgid "Make sure Start authentication is on in the Google Admin console (Gmail › Authenticate email): the record alone doesn't turn signing on."
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:547
+#, php-format
+msgid "%s has no DMARC policy"
+msgstr ""
+
+#: includes/class-dns.php:548
+msgid "DMARC tells receivers what to do with email that fails SPF and DKIM, and sends you reports. Gmail, Yahoo and Microsoft require it from bulk senders and trust domains that have one. Start with a policy that only monitors:"
+msgstr ""
+
+#. translators: %s: DNS name
+#: includes/class-dns.php:561
+#, php-format
+msgid "%s has more than one DMARC record"
+msgstr ""
+
+#: includes/class-dns.php:562
+msgid "Receivers ignore DMARC when there are several records. Delete all but one."
+msgstr ""
+
+#: includes/class-dns.php:571
+msgid "The DMARC record has no valid policy"
+msgstr ""
+
+#: includes/class-dns.php:572
+msgid "A DMARC record needs p=none, p=quarantine or p=reject. Replace it, for example with:"
+msgstr ""
+
+#. translators: %s: report addresses
+#: includes/class-dns.php:585
+#, php-format
+msgid "Reports go to %s."
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:594
+#, php-format
+msgid "Email from %s fails DMARC"
+msgstr ""
+
+#. translators: 1: domain, 2: policy (quarantine or reject)
+#: includes/class-dns.php:596
+#, php-format
+msgid "DMARC tells receivers to %2$s email from %1$s"
+msgstr ""
+
+#: includes/class-dns.php:597
+msgid "Email sent through Google passes neither DKIM for your domain nor SPF for the same domain, so it fails DMARC. Set up DKIM above; that fixes it."
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:604
+#, php-format
+msgid "DMARC monitors %s (p=none)"
+msgstr ""
+
+#: includes/class-dns.php:605
+msgid "Receivers report on your email but don't act on failures. Once the reports show only your own services, consider p=quarantine."
+msgstr ""
+
+#. translators: 1: domain, 2: policy
+#: includes/class-dns.php:611
+#, php-format
+msgid "DMARC protects %1$s (p=%2$s)"
+msgstr ""
+
+#: includes/class-dns.php:612
+msgid "Email that fails SPF and DKIM is held back by receivers, and email through Google passes."
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:662
+#, php-format
+msgid "%s doesn't receive email"
+msgstr ""
+
+#: includes/class-dns.php:663
+msgid "There are no MX records, so replies to your messages bounce, and some receivers distrust senders that can't receive. Send from an address that receives email."
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-dns.php:680
+#, php-format
+msgid "Email to %s is received by Google"
+msgstr ""
+
+#. translators: 1: domain, 2: mail server
+#: includes/class-dns.php:682
+#, php-format
+msgid "Email to %1$s is received by %2$s"
+msgstr ""
+
+#: includes/class-dns.php:684
+msgid "Replies to your messages arrive in Google Workspace."
+msgstr ""
+
+#: includes/class-dns.php:685
+msgid "That's fine: where you receive email doesn't affect sending through Google. Replies go there."
+msgstr ""
+
+#. translators: 1: provider, 2: account
+#: includes/class-health.php:98
+#, php-format
+msgid "Email is sent through %1$s as %2$s"
+msgstr ""
+
+#: includes/class-health.php:99
+msgid "Every message from wp_mail() goes through the Gmail API and is logged."
+msgstr ""
+
+#: includes/class-health.php:101
+#: templates/partials/status.php:22
+#: templates/settings.php:86
+#: templates/settings.php:115
+msgid "Connection"
+msgstr ""
+
+#. translators: %s: provider
+#: includes/class-health.php:109
+#, php-format
+msgid "%s is not accepting email from this site"
+msgstr ""
+
+#: includes/class-health.php:119
+#: templates/partials/status.php:55
+msgid "Email is sent by the web server"
+msgstr ""
+
+#. translators: %s: provider
+#: includes/class-health.php:121
+#, php-format
+msgid "Messages from a web server often land in spam or are rejected. Connect %s to send through it."
+msgstr ""
+
+#: includes/class-health.php:131
+#: templates/partials/status.php:31
+msgid "Sending is paused"
+msgstr ""
+
+#: includes/class-health.php:133
+msgid "NEMVO_EMAIL_PAUSE is set (in wp-config.php or the environment), so messages are logged but not sent."
+msgstr ""
+
+#: includes/class-health.php:134
+msgid "Messages are logged but not sent. That suits a staging copy of a site, not a live one."
+msgstr ""
+
+#: includes/class-health.php:136
+msgid "Sending"
+msgstr ""
+
+#. translators: 1: list like "DKIM, DMARC", 2: domain
+#: includes/class-health.php:155
+#, php-format
+msgid "%1$s for %2$s needs attention"
+msgid_plural "%1$s for %2$s need attention"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: domain
+#: includes/class-health.php:157
+#, php-format
+msgid "SPF, DKIM and DMARC are in order for %s"
+msgstr ""
+
+#: includes/class-health.php:159
+msgid "Receivers use these DNS records to tell your email from forgeries. The domain check shows exactly what to publish."
+msgstr ""
+
+#. translators: %s: date and time
+#: includes/class-health.php:161
+#: templates/partials/dns.php:43
+#, php-format
+msgid "Checked %s."
+msgstr ""
+
+#: includes/class-health.php:163
+#: templates/partials/status.php:67
+msgid "Domain check"
+msgstr ""
+
+#. translators: %s: domain
+#: includes/class-health.php:170
+#, php-format
+msgid "The DNS of %s hasn't been checked yet"
+msgstr ""
+
+#: includes/class-health.php:171
+msgid "SPF, DKIM and DMARC decide whether your email lands in the inbox. The check takes a second."
+msgstr ""
+
+#: includes/class-health.php:173
+msgid "Check the domain"
+msgstr ""
+
+#. translators: %s: plugin names
+#: includes/class-health.php:184
+#, php-format
+msgid "Another email plugin is active: %s"
+msgstr ""
+
+#: includes/class-health.php:186
+msgid "Nemvo Email sends every message, so the other plugin's settings have no effect, but two plugins hooking into email can still clash. Deactivate it."
+msgstr ""
+
+#: includes/class-health.php:187
+msgid "Import its settings if it is WP Mail SMTP, connect Google, then deactivate it."
+msgstr ""
+
+#: includes/class-health.php:189
+#: includes/class-health.php:202
+msgid "Plugins"
+msgstr ""
+
+#: includes/class-health.php:198
+msgid "Another plugin replaces wp_mail()"
+msgstr ""
+
+#. translators: %s: file
+#: includes/class-health.php:200
+#, php-format
+msgid "wp_mail() is defined in %s, so WordPress email doesn't pass through Nemvo Email. Deactivate the plugin that does this."
+msgstr ""
+
+#: includes/class-health.php:213
+msgid "Google needs this site on https://"
+msgstr ""
+
+#: includes/class-health.php:214
+msgid "Google only sends sign-ins back to https:// addresses (or localhost). Turn on SSL for the site and set its address to https:// under Settings › General first."
+msgstr ""
+
+#: includes/class-health.php:216
+msgid "General settings"
+msgstr ""
+
+#: includes/class-health.php:225
+msgid "No test email sent yet"
+msgstr ""
+
+#: includes/class-health.php:226
+msgid "Send one to see a message arrive, and to check it isn't marked as spam."
+msgstr ""
+
+#: includes/class-health.php:228
+#: templates/setup.php:307
+msgid "Send a test email"
+msgstr ""
+
+#: includes/class-health.php:244
+msgid "Email delivery"
+msgstr ""
+
+#: includes/class-import.php:107
+msgid "WP Mail SMTP has no settings to import."
+msgstr ""
+
+#: includes/class-import.php:134
+#: includes/class-import.php:139
+msgid "Google OAuth client"
+msgstr ""
+
+#: includes/class-import.php:135
+msgid "Gmail connection"
+msgstr ""
+
+#: includes/class-import.php:149
+#: templates/partials/sender.php:26
+msgid "From address"
+msgstr ""
+
+#: includes/class-import.php:153
+#: templates/partials/sender.php:38
+msgid "From name"
+msgstr ""
+
+#: includes/class-import.php:159
+msgid "\"Do not send\" (sending paused)"
+msgstr ""
+
+#. translators: %s: site title
+#: includes/class-mailer.php:618
+#, php-format
+msgid "Test email from %s"
+msgstr ""
+
+#. translators: 1: provider name, 2: account
+#: includes/class-mailer.php:622
+#, php-format
+msgid "This message was sent by WordPress through %1$s, as %2$s."
+msgstr ""
+
+#: includes/class-mailer.php:623
+msgid "This message was sent by WordPress from the web server."
+msgstr ""
+
+#: includes/class-mailer.php:624
+msgid "If it arrived in your inbox, email from this site works."
+msgstr ""
+
+#. translators: %s: date and time
+#: includes/class-mailer.php:626
+#, php-format
+msgid "Sent: %s"
+msgstr ""
+
+#: includes/class-mailer.php:666
+msgid "The content of this email was not kept, so it can't be sent again."
+msgstr ""
+
+#: includes/class-privacy.php:68
+msgid "Emails sent by the site"
+msgstr ""
+
+#: includes/class-privacy.php:72
+msgid "Date (UTC)"
+msgstr ""
+
+#: includes/class-privacy.php:76
+#: assets/js/app.js:398
+#: assets/js/app.js:571
+msgid "Subject"
+msgstr ""
+
+#: includes/class-privacy.php:80
+#: templates/settings.php:85
+#: templates/settings.php:97
+#: assets/js/app.js:548
+#: assets/js/app.js:569
+msgid "Status"
+msgstr ""
+
+#: includes/class-privacy.php:84
+#: templates/settings.php:254
+#: assets/js/app.js:795
+msgid "From"
+msgstr ""
+
+#: includes/class-privacy.php:123
+msgid "Nemvo Email sends the site's email through Google and keeps a log. Adjust this text to your settings."
+msgstr ""
+
+#: includes/class-privacy.php:124
+msgid "Suggested text:"
+msgstr ""
+
+#: includes/class-privacy.php:125
+msgid "Email from this website, such as order confirmations, password resets and replies to forms, is sent through Google Workspace (Google LLC). Google processes the messages, including your email address and their content, to deliver them."
+msgstr ""
+
+#. translators: %d: days
+#: includes/class-privacy.php:127
+#, php-format
+msgid "We keep a log of the email we send (recipient addresses, subject and delivery status) for %d day, to make sure email arrives."
+msgid_plural "We keep a log of the email we send (recipient addresses, subject and delivery status) for %d days, to make sure email arrives."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-providers.php:85
+msgid "This server (PHP mail)"
+msgstr ""
+
+#: includes/class-providers.php:86
+msgid "This server (sendmail)"
+msgstr ""
+
+#: includes/class-providers.php:87
+msgid "SMTP"
+msgstr ""
+
+#: includes/class-providers.php:88
+msgid "Not sent (paused)"
+msgstr ""
+
+#: includes/class-rest.php:131
+msgid "The period ends before it starts."
+msgstr ""
+
+#: includes/class-rest.php:169
+#: includes/class-rest.php:193
+msgid "This log entry no longer exists."
+msgstr ""
+
+#: includes/class-rest.php:209
+msgid "Enter a valid email address."
+msgstr ""
+
+#. translators: %s: Workspace domain
+#: includes/providers/class-google.php:64
+#: templates/providers/google.php:35
+msgid "Google Workspace"
+msgstr ""
+
+#. translators: 1: the end of every client ID, 2: an example client ID
+#: includes/providers/class-google.php:162
+#, php-format
+msgid "That doesn't look like a client ID. It ends in %1$s and starts with the project number, like %2$s."
+msgstr ""
+
+#: includes/providers/class-google.php:165
+msgid "Enter the client secret as well."
+msgstr ""
+
+#: includes/providers/class-google.php:168
+msgid "That doesn't look like a client secret. Google's secrets start with GOCSPX- and contain no spaces."
+msgstr ""
+
+#: includes/providers/class-google.php:405
+msgid "The sign-in took too long or was started in another browser. Please try again."
+msgstr ""
+
+#: includes/providers/class-google.php:411
+msgid "This sign-in was already used or has expired. Please try again."
+msgstr ""
+
+#: includes/providers/class-google.php:416
+msgid "The sign-in was cancelled at Google, so nothing was connected."
+msgstr ""
+
+#. translators: %s: error code from Google
+#: includes/providers/class-google.php:419
+#, php-format
+msgid "Google returned an error: %s"
+msgstr ""
+
+#: includes/providers/class-google.php:422
+msgid "Google did not return an authorization code. Please try again."
+msgstr ""
+
+#: includes/providers/class-google.php:439
+msgid "Google didn't grant permission to send email. Connect again and leave \"Send email on your behalf\" ticked on Google's consent screen."
+msgstr ""
+
+#: includes/providers/class-google.php:442
+msgid "Google did not return a refresh token. Remove the app under myaccount.google.com/permissions and connect again."
+msgstr ""
+
+#: includes/providers/class-google.php:448
+msgid "Google did not say which account was connected. Please try again."
+msgstr ""
+
+#: includes/providers/class-google.php:451
+msgid "Google's answer was meant for another OAuth client. Please try again."
+msgstr ""
+
+#. translators: %s: error message
+#: includes/providers/class-google.php:594
+#, php-format
+msgid "Could not reach Google: %s"
+msgstr ""
+
+#: includes/providers/class-google.php:607
+msgid "Google no longer accepts the connection. It was removed from the Google account, the password changed, or the OAuth app is still in \"Testing\", where access ends after 7 days. Connect again."
+msgstr ""
+
+#: includes/providers/class-google.php:611
+msgid "Google doesn't accept the OAuth client ID and secret. Check them, or create a new secret in Google Cloud and enter it under Settings › Connection."
+msgstr ""
+
+#. translators: 1: error code, 2: description
+#: includes/providers/class-google.php:615
+#, php-format
+msgid "Google refused the request (%1$s). %2$s"
+msgstr ""
+
+#: includes/providers/class-google.php:629
+msgid "No Google account is connected."
+msgstr ""
+
+#: includes/providers/class-google.php:640
+msgid "The stored Google authorization can't be read. The WordPress security keys in wp-config.php (or NEMVO_EMAIL_KEY) have changed since it was connected. Connect again."
+msgstr ""
+
+#: includes/providers/class-google.php:645
+msgid "The OAuth client secret is missing or can't be read. Enter it again under Settings › Connection."
+msgstr ""
+
+#. translators: %s: size, e.g. 41 MB
+#: includes/providers/class-google.php:690
+#, php-format
+msgid "The message is %s with attachments; Gmail takes at most 35 MB (25 MB of attachments)."
+msgstr ""
+
+#. translators: %s: error message
+#: includes/providers/class-google.php:718
+#: includes/providers/class-google.php:775
+#, php-format
+msgid "Could not reach Gmail: %s"
+msgstr ""
+
+#: includes/providers/class-google.php:744
+msgid "Gmail did not accept the message."
+msgstr ""
+
+#: includes/providers/class-google.php:817
+msgid "The Gmail API is not enabled in the Google Cloud project of your OAuth client. Enable it, wait a minute, and try again."
+msgstr ""
+
+#: includes/providers/class-google.php:823
+msgid "The connected account didn't grant permission to send email. Connect again and leave \"Send email on your behalf\" ticked."
+msgstr ""
+
+#: includes/providers/class-google.php:826
+msgid "Gmail did not accept the authorization. Connect the account again."
+msgstr ""
+
+#. translators: %s: Gmail's own message
+#: includes/providers/class-google.php:831
+#, php-format
+msgid "Gmail's sending limit was reached: %s"
+msgstr ""
+
+#. translators: %s: Gmail's own message
+#: includes/providers/class-google.php:831
+msgid "too many messages."
+msgstr ""
+
+#. translators: 1: HTTP status, 2: Gmail's message
+#: includes/providers/class-google.php:836
+#, php-format
+msgid "Gmail refused the message (%1$d): %2$s"
+msgstr ""
+
+#. translators: 1: HTTP status, 2: Gmail's message
+#: includes/providers/class-google.php:836
+msgid "no reason given."
+msgstr ""
+
+#: templates/app.php:25
+msgid "This screen needs JavaScript."
+msgstr ""
+
+#: templates/partials/dns.php:21
+#: templates/partials/redirect-uri.php:20
+#: templates/settings.php:292
+#: templates/settings.php:294
+msgid "Copy"
+msgstr ""
+
+#. translators: %s: domain
+#: templates/partials/dns.php:28
+#, php-format
+msgid "You send from a %s address. Google takes care of its SPF, DKIM and DMARC, so there is nothing to publish."
+msgstr ""
+
+#. translators: 1: domain, 2: DNS host like Cloudflare, 3: name server
+#: templates/partials/dns.php:36
+#, php-format
+msgid "The DNS of %1$s is hosted at %2$s (%3$s). Records are added there."
+msgstr ""
+
+#. translators: 1: domain, 2: name server
+#: templates/partials/dns.php:39
+#, php-format
+msgid "The DNS of %1$s is served by %2$s. Records are added wherever you manage the domain."
+msgstr ""
+
+#: templates/partials/dns.php:72
+msgid "Type"
+msgstr ""
+
+#: templates/partials/dns.php:76
+msgid "Name"
+msgstr ""
+
+#. translators: %s: full DNS name
+#: templates/partials/dns.php:84
+#, php-format
+msgid "Full name: %s"
+msgstr ""
+
+#: templates/partials/dns.php:91
+msgid "Change the value to"
+msgstr ""
+
+#: templates/partials/dns.php:91
+msgid "Value"
+msgstr ""
+
+#: templates/partials/dns.php:102
+msgid "What is published now"
+msgstr ""
+
+#: templates/partials/dns.php:113
+msgid "New records are usually visible within minutes; some DNS hosts take up to an hour. Then check again."
+msgstr ""
+
+#: templates/partials/redirect-uri.php:19
+#: templates/providers/google.php:83
+msgid "Authorized redirect URI"
+msgstr ""
+
+#: templates/partials/redirect-uri.php:26
+msgid "Google only accepts https:// redirect URIs (except for localhost). Turn on SSL and change the site address to https:// under Settings › General first."
+msgstr ""
+
+#. translators: %s: connected account
+#: templates/partials/sender.php:32
+#, php-format
+msgid "Empty: %s itself. Another address must be one of its \"Send mail as\" addresses in Gmail (Settings › Accounts), a Google group it may send as, or an alias; otherwise Gmail sends as the account instead."
+msgstr ""
+
+#: templates/partials/sender.php:40
+msgid "Empty: the site title."
+msgstr ""
+
+#: templates/partials/sender.php:46
+msgid "Send all email from this address"
+msgstr ""
+
+#: templates/partials/sender.php:46
+msgid "Recommended. Some plugins set their own sender, such as a contact form using the visitor's address. Gmail can't send as those, so they are replaced."
+msgstr ""
+
+#: templates/partials/sender.php:50
+msgid "Make a replaced outside sender the Reply-To"
+msgstr ""
+
+#: templates/partials/sender.php:50
+msgid "So that replying to a contact form message goes to the visitor. Addresses of your own domain, no-reply addresses and an existing Reply-To are left as they are."
+msgstr ""
+
+#: templates/partials/sender.php:54
+msgid "Use this name for all email"
+msgstr ""
+
+#: templates/partials/sender.php:54
+msgid "Off: plugins keep the names they set, like a shop name on order emails. \"WordPress\" is always replaced."
+msgstr ""
+
+#: templates/partials/sender.php:57
+msgid "Save sender"
+msgstr ""
+
+#. translators: %s: provider
+#: templates/partials/status.php:33
+#, php-format
+msgid "Sending through %s"
+msgstr ""
+
+#. translators: 1: sender, 2: account
+#: templates/partials/status.php:40
+#, php-format
+msgid "From %1$s · account %2$s"
+msgstr ""
+
+#: templates/partials/status.php:42
+msgid "messages are logged, not sent"
+msgstr ""
+
+#. translators: %s: provider
+#: templates/partials/status.php:50
+#, php-format
+msgid "Not sending: %s refuses the connection"
+msgstr ""
+
+#. translators: %s: provider
+#: templates/partials/status.php:59
+#, php-format
+msgid "Messages from web servers often land in spam. Connect %s and every message goes out through it. Until then, this log shows what WordPress sends."
+msgstr ""
+
+#: templates/partials/status.php:81
+msgid "Google limits how many messages an account may send in 24 hours."
+msgstr ""
+
+#. translators: 1: messages sent, 2: limit
+#: templates/partials/status.php:85
+#, php-format
+msgid "%1$s of %2$s in 24 h"
+msgstr ""
+
+#: templates/partials/test.php:21
+msgid "Send a test email to"
+msgstr ""
+
+#: templates/partials/test.php:24
+msgid "Send test email"
+msgstr ""
+
+#: templates/providers/google.php:28
+msgid "Account type"
+msgstr ""
+
+#: templates/providers/google.php:33
+msgid "Personal Gmail"
+msgstr ""
+
+#. translators: %s: Workspace domain
+#: templates/providers/google.php:35
+#, php-format
+msgid "Google Workspace (%s)"
+msgstr ""
+
+#: templates/providers/google.php:41
+msgid "Permission"
+msgstr ""
+
+#: templates/providers/google.php:42
+msgid "Full Gmail access"
+msgstr ""
+
+#: templates/providers/google.php:42
+msgid "Send email only"
+msgstr ""
+
+#: templates/providers/google.php:45
+msgid "Daily limit"
+msgstr ""
+
+#. translators: %s: number of messages
+#: templates/providers/google.php:49
+#, php-format
+msgid "%s messages"
+msgstr ""
+
+#: templates/providers/google.php:54
+#: templates/settings.php:120
+msgid "Connected"
+msgstr ""
+
+#: templates/providers/google.php:59
+msgid "imported from WP Mail SMTP"
+msgstr ""
+
+#: templates/providers/google.php:65
+msgid "Last checked"
+msgstr ""
+
+#. translators: %s: time span, e.g. 5 mins
+#: templates/providers/google.php:66
+#, php-format
+msgid "%s ago"
+msgstr ""
+
+#: templates/providers/google.php:70
+msgid "OAuth client ID"
+msgstr ""
+
+#: templates/providers/google.php:76
+msgid "This connection was made by WP Mail SMTP, which asks for full access to the mailbox. Connect again here to limit it to sending, after adding the redirect URI below to the OAuth client in Google Cloud (Clients › your client › Authorized redirect URIs)."
+msgstr ""
+
+#: templates/providers/google.php:80
+msgid "The OAuth client is set with NEMVO_EMAIL_GOOGLE_CLIENT_ID and NEMVO_EMAIL_GOOGLE_CLIENT_SECRET."
+msgstr ""
+
+#: templates/providers/google.php:84
+msgid "Listed under the OAuth client in Google Cloud. It changes if the site's address changes."
+msgstr ""
+
+#: templates/settings.php:84
+msgid "Settings sections"
+msgstr ""
+
+#: templates/settings.php:87
+#: templates/settings.php:156
+#: templates/setup.php:43
+msgid "Sender"
+msgstr ""
+
+#: templates/settings.php:88
+#: templates/settings.php:168
+msgid "Test email"
+msgstr ""
+
+#: templates/settings.php:89
+#: templates/settings.php:177
+#: templates/settings.php:185
+#: templates/setup.php:53
+#: assets/js/app.js:406
+msgid "Domain"
+msgstr ""
+
+#: templates/settings.php:90
+#: templates/settings.php:203
+msgid "Sending & log"
+msgstr ""
+
+#: templates/settings.php:91
+#: templates/settings.php:277
+msgid "Import"
+msgstr ""
+
+#: templates/settings.php:92
+#: templates/settings.php:290
+msgid "Developers"
+msgstr ""
+
+#: templates/settings.php:98
+msgid "The same checks appear under Tools › Site Health."
+msgstr ""
+
+#: templates/settings.php:111
+msgid "Open the setup guide"
+msgstr ""
+
+#. translators: 1: provider, 2: account
+#: templates/settings.php:122
+#, php-format
+msgid "Sending through %1$s as %2$s."
+msgstr ""
+
+#: templates/settings.php:125
+msgid "Not working"
+msgstr ""
+
+#: templates/settings.php:129
+msgid "Not connected"
+msgstr ""
+
+#: templates/settings.php:130
+msgid "WordPress sends email from the web server."
+msgstr ""
+
+#: templates/settings.php:140
+msgid "Check connection"
+msgstr ""
+
+#: templates/settings.php:143
+msgid "Connect again"
+msgstr ""
+
+#: templates/settings.php:143
+#: templates/setup.php:38
+msgid "Connect"
+msgstr ""
+
+#: templates/settings.php:146
+msgid "Change OAuth client"
+msgstr ""
+
+#: templates/settings.php:149
+msgid "Disconnect"
+msgstr ""
+
+#: templates/settings.php:149
+msgid "Disconnect the account? WordPress will send email from the web server until you connect again."
+msgstr ""
+
+#: templates/settings.php:163
+msgid "Connect an account first; the sender defaults to it."
+msgstr ""
+
+#: templates/settings.php:169
+msgid "Sends a short message through wp_mail(), like any other WordPress email, and shows the result."
+msgstr ""
+
+#: templates/settings.php:178
+msgid "SPF, DKIM and DMARC let receivers tell your email from forgeries. The sender domain is checked every day; check another domain, or a custom DKIM selector, here."
+msgstr ""
+
+#: templates/settings.php:189
+msgid "DKIM selector"
+msgstr ""
+
+#: templates/settings.php:192
+msgid "Check"
+msgstr ""
+
+#: templates/settings.php:212
+msgid "Pause sending"
+msgstr ""
+
+#: templates/settings.php:216
+msgid "Set by NEMVO_EMAIL_PAUSE."
+msgstr ""
+
+#: templates/settings.php:217
+msgid "Messages are logged but not sent, and WordPress is told they were sent. For staging copies of a live site, or while you test."
+msgstr ""
+
+#: templates/settings.php:225
+msgid "Keep the content of messages in the log"
+msgstr ""
+
+#: templates/settings.php:226
+msgid "Lets you read and resend messages. Messages can contain password reset links and personal data, so this is off by default. Turning it off deletes kept content."
+msgstr ""
+
+#: templates/settings.php:232
+msgid "Keep log entries for"
+msgstr ""
+
+#: templates/settings.php:233
+msgid "days"
+msgstr ""
+
+#: templates/settings.php:236
+msgid "The statistics are counted from the log, so they reach back as far as it does. Recipients' addresses are personal data; Tools › Export and Erase Personal Data include the log."
+msgstr ""
+
+#: templates/settings.php:237
+msgid "Save"
+msgstr ""
+
+#: templates/settings.php:239
+msgid "Empty the log"
+msgstr ""
+
+#: templates/settings.php:241
+msgid "Delete all log entries"
+msgstr ""
+
+#: templates/settings.php:241
+msgid "Delete every log entry? The statistics start again from zero."
+msgstr ""
+
+#: templates/settings.php:246
+#: templates/setup.php:163
+msgid "Import from WP Mail SMTP"
+msgstr ""
+
+#: templates/settings.php:250
+msgid "Mailer"
+msgstr ""
+
+#: templates/settings.php:251
+msgid "plugin inactive"
+msgstr ""
+
+#: templates/settings.php:258
+msgid "Gmail"
+msgstr ""
+
+#. translators: %s: account
+#: templates/settings.php:263
+#, php-format
+msgid "connected as %s"
+msgstr ""
+
+#: templates/settings.php:265
+msgid "One-Click Setup (can't be imported)"
+msgstr ""
+
+#: templates/settings.php:267
+msgid "OAuth client, not connected"
+msgstr ""
+
+#: templates/settings.php:275
+msgid "Imports the sender, \"Do not send\", and the Gmail mailer's OAuth client and connection. WP Mail SMTP's own settings stay as they are."
+msgstr ""
+
+#: templates/settings.php:277
+msgid "Importing replaces the current connection and sender settings. Continue?"
+msgstr ""
+
+#: templates/settings.php:280
+#: templates/setup.php:373
+msgid "Deactivate WP Mail SMTP"
+msgstr ""
+
+#: templates/settings.php:285
+msgid "WP Mail SMTP isn't installed here, or has no settings worth importing."
+msgstr ""
+
+#: templates/settings.php:291
+msgid "wp-config.php"
+msgstr ""
+
+#: templates/settings.php:293
+msgid "WP-CLI"
+msgstr ""
+
+#: templates/settings.php:295
+msgid "Hooks"
+msgstr ""
+
+#: templates/settings.php:298
+msgid "Actions after each message, with the PHPMailer object, the result (message id or error) and the provider."
+msgstr ""
+
+#: templates/settings.php:299
+msgid "Filter a log entry before it is written; return false to leave a message out of the log."
+msgstr ""
+
+#: templates/settings.php:300
+msgid "Capability for these screens (default manage_options)."
+msgstr ""
+
+#: templates/settings.php:303
+msgid "Every wp_mail() filter keeps working: wp_mail, wp_mail_from, wp_mail_content_type, phpmailer_init, wp_mail_succeeded and wp_mail_failed."
+msgstr ""
+
+#: templates/setup.php:33
+msgid "Google Cloud"
+msgstr ""
+
+#: templates/setup.php:35
+msgid "An OAuth client for this site"
+msgstr ""
+
+#: templates/setup.php:40
+msgid "The account that sends"
+msgstr ""
+
+#: templates/setup.php:45
+msgid "Name and address"
+msgstr ""
+
+#: templates/setup.php:48
+msgid "Test"
+msgstr ""
+
+#: templates/setup.php:50
+msgid "See a message arrive"
+msgstr ""
+
+#: templates/setup.php:55
+msgid "SPF, DKIM and DMARC"
+msgstr ""
+
+#: templates/setup.php:58
+msgid "Done"
+msgstr ""
+
+#: templates/setup.php:83
+#: templates/setup.php:316
+#: templates/setup.php:343
+#: assets/js/admin.js:231
+msgid "Continue"
+msgstr ""
+
+#: templates/setup.php:98
+msgid "Connect a Google account first."
+msgstr ""
+
+#: templates/setup.php:99
+msgid "Go to Connect"
+msgstr ""
+
+#: templates/setup.php:108
+msgid "Setup steps"
+msgstr ""
+
+#: templates/setup.php:129
+msgid "(done)"
+msgstr ""
+
+#: templates/setup.php:145
+msgid "WP Mail SMTP is set up on this site"
+msgstr ""
+
+#. translators: %s: Gmail account
+#: templates/setup.php:150
+#, php-format
+msgid "It sends through Gmail as %s. Import its settings and that connection, and you can skip the Google Cloud steps."
+msgstr ""
+
+#: templates/setup.php:152
+msgid "It uses WP Mail SMTP's own Google app (\"One-Click Setup\"), which other plugins can't use, so you'll create an OAuth client below. Its sender settings can be imported."
+msgstr ""
+
+#: templates/setup.php:154
+msgid "It has a Google OAuth client but no Gmail connection. Import the client and its sender settings, then connect."
+msgstr ""
+
+#: templates/setup.php:156
+msgid "Its sender settings can be imported. Gmail itself still needs to be connected below."
+msgstr ""
+
+#: templates/setup.php:169
+msgid "Create an OAuth client in Google Cloud"
+msgstr ""
+
+#: templates/setup.php:170
+msgid "WordPress sends through your Google account with the Gmail API. For that, the site needs its own OAuth client in Google Cloud. It's free, takes about ten minutes, and is done once. Sign in to Google Cloud with your Google Workspace administrator account."
+msgstr ""
+
+#: templates/setup.php:174
+msgid "Create a project."
+msgstr ""
+
+#. translators: %s: link
+#: templates/setup.php:177
+#, php-format
+msgid "Open %s, name it, for example \"Website email\", and click Create. Check that the new project is selected at the top of the page."
+msgstr ""
+
+#: templates/setup.php:181
+msgid "Enable the Gmail API."
+msgstr ""
+
+#. translators: %s: link
+#: templates/setup.php:184
+#, php-format
+msgid "Open the %s and click Enable."
+msgstr ""
+
+#. translators: %s: link
+#: templates/setup.php:184
+msgid "Gmail API"
+msgstr ""
+
+#: templates/setup.php:188
+msgid "Set up the consent screen."
+msgstr ""
+
+#. translators: %s: link
+#: templates/setup.php:191
+#, php-format
+msgid "Open %s and click Get started. Enter an app name (your organisation's name) and a support email, then choose the audience:"
+msgstr ""
+
+#. translators: %s: link
+#: templates/setup.php:191
+msgid "Google Auth Platform"
+msgstr ""
+
+#: templates/setup.php:194
+msgid "<strong>Internal</strong> if the sending account is in your Google Workspace. Recommended: no review by Google, and the connection doesn't expire."
+msgstr ""
+
+#: templates/setup.php:195
+msgid "<strong>External</strong> for a personal Gmail account. Afterwards, open <em>Audience</em> and click <strong>Publish app</strong>; in \"Testing\" the connection stops working after 7 days. When you connect, Google warns that the app isn't verified: click <em>Advanced</em> and continue to your app."
+msgstr ""
+
+#: templates/setup.php:197
+msgid "Enter a contact email, agree, and click Create. There's no need to add scopes; the plugin asks for them when you connect."
+msgstr ""
+
+#: templates/setup.php:200
+msgid "Create the OAuth client."
+msgstr ""
+
+#. translators: %s: link
+#: templates/setup.php:203
+#, php-format
+msgid "Open %s, click Create client, choose the application type \"Web application\" and name it \"WordPress\". Under \"Authorized redirect URIs\", click Add URI and paste exactly this address:"
+msgstr ""
+
+#. translators: %s: link
+#: templates/setup.php:203
+msgid "Clients"
+msgstr ""
+
+#: templates/setup.php:205
+msgid "Leave \"Authorized JavaScript origins\" empty and click Create."
+msgstr ""
+
+#: templates/setup.php:209
+msgid "Copy the client ID and secret"
+msgstr ""
+
+#: templates/setup.php:210
+msgid "that Google shows into the fields below. (Closed the dialog? Open the client in the list; you can add a new secret there.)"
+msgstr ""
+
+#: templates/setup.php:215
+msgid "The OAuth client is set with NEMVO_EMAIL_GOOGLE_CLIENT_ID and NEMVO_EMAIL_GOOGLE_CLIENT_SECRET (in wp-config.php or the environment)."
+msgstr ""
+
+#: templates/setup.php:224
+msgid "Client ID"
+msgstr ""
+
+#: templates/setup.php:228
+msgid "Client secret"
+msgstr ""
+
+#: templates/setup.php:229
+msgid "Saved; leave empty to keep it"
+msgstr ""
+
+#: templates/setup.php:230
+msgid "Stored encrypted. A different client ID disconnects the current account."
+msgstr ""
+
+#: templates/setup.php:233
+#: templates/setup.php:300
+msgid "Save and continue"
+msgstr ""
+
+#: templates/setup.php:239
+msgid "Connect the account that sends"
+msgstr ""
+
+#: templates/setup.php:242
+msgid "Go to Google Cloud"
+msgstr ""
+
+#. translators: %s: account
+#: templates/setup.php:252
+#, php-format
+msgid "Connected as %s."
+msgstr ""
+
+#: templates/setup.php:257
+msgid "Sign in with the Google account WordPress should send as: a mailbox such as info@ or website@ your domain works well. Google then asks to let this site send email on the account's behalf. The plugin can only send; it can't read or delete email."
+msgstr ""
+
+#: templates/setup.php:263
+msgid "Connect a different account"
+msgstr ""
+
+#: templates/setup.php:263
+msgid "Sign in with Google"
+msgstr ""
+
+#: templates/setup.php:272
+msgid "If Google shows an error"
+msgstr ""
+
+#: templates/setup.php:276
+msgid "The redirect URI in the OAuth client doesn't match this one exactly (check http/https, www, and that nothing was added at the end):"
+msgstr ""
+
+#: templates/setup.php:279
+msgid "Access blocked / org_internal"
+msgstr ""
+
+#: templates/setup.php:280
+msgid "The consent screen is Internal, but you signed in with an account outside that Google Workspace. Use an account of the organisation, or change the audience to External."
+msgstr ""
+
+#: templates/setup.php:281
+msgid "\"Google hasn't verified this app\""
+msgstr ""
+
+#: templates/setup.php:282
+msgid "Expected for External apps. Click Advanced, then \"Go to (app name)\". It's your own app."
+msgstr ""
+
+#: templates/setup.php:284
+msgid "Your Workspace administrator restricts third-party apps. In the Google Admin console, open Security › Access and data control › API controls › Manage third-party app access, and mark your OAuth client as Trusted."
+msgstr ""
+
+#: templates/setup.php:286
+msgid "The client ID or secret is wrong, or the client was deleted. Enter them again in the Google Cloud step."
+msgstr ""
+
+#: templates/setup.php:293
+msgid "Who the email is from"
+msgstr ""
+
+#: templates/setup.php:297
+msgid "The sender recipients see. The defaults suit most sites: the connected account and the site title."
+msgstr ""
+
+#: templates/setup.php:311
+msgid "A short message through the same path as every WordPress email. Check that it arrives in the inbox, not the spam folder. Sending to an address outside your organisation shows best how others receive it."
+msgstr ""
+
+#: templates/setup.php:316
+msgid "Skip"
+msgstr ""
+
+#. translators: %s: domain
+#: templates/setup.php:326
+#, php-format
+msgid "Check the DNS of %s"
+msgstr ""
+
+#: templates/setup.php:327
+msgid "Check the sender domain"
+msgstr ""
+
+#: templates/setup.php:334
+msgid "Receivers check three DNS records to tell your email from forgeries: SPF (which servers may send), DKIM (a signature) and DMARC (what to do with failures). Without them, email lands in spam or is rejected."
+msgstr ""
+
+#: templates/setup.php:341
+msgid "Check again"
+msgstr ""
+
+#: templates/setup.php:343
+msgid "Continue, fix it later"
+msgstr ""
+
+#: templates/setup.php:349
+msgid "Email is set up"
+msgstr ""
+
+#: templates/setup.php:349
+msgid "Almost there"
+msgstr ""
+
+#: templates/setup.php:361
+msgid "Change"
+msgstr ""
+
+#: templates/setup.php:361
+msgid "Open"
+msgstr ""
+
+#: templates/setup.php:368
+msgid "WP Mail SMTP is still active"
+msgstr ""
+
+#: templates/setup.php:369
+msgid "Nemvo Email sends every message now, so WP Mail SMTP has nothing left to do. Deactivate it so only one plugin handles email; its settings are kept."
+msgstr ""
+
+#: templates/setup.php:379
+msgid "Every email WordPress sends now goes through Google and appears in the log, with statistics on the overview. The domain check runs again every day, and Site Health warns you if something stops working."
+msgstr ""
+
+#: templates/setup.php:383
+msgid "Finish"
+msgstr ""
+
+#: templates/setup.php:386
+msgid "Continue setup"
+msgstr ""
+
+#: assets/js/admin.js:30
+msgid "Theme: automatic"
+msgstr ""
+
+#: assets/js/admin.js:31
+msgid "Theme: light"
+msgstr ""
+
+#: assets/js/admin.js:32
+msgid "Theme: dark"
+msgstr ""
+
+#. translators: %d: HTTP status
+#: assets/js/admin.js:86
+#, js-format
+msgid "The request failed (%d)."
+msgstr ""
+
+#: assets/js/admin.js:127
+msgid "Copied"
+msgstr ""
+
+#: assets/js/admin.js:127
+msgid "Select and copy by hand"
+msgstr ""
+
+#: assets/js/admin.js:193
+msgid "Open in the log"
+msgstr ""
+
+#: assets/js/admin.js:205
+msgid "Sending…"
+msgstr ""
+
+#: assets/js/admin.js:212
+msgid "Logged, not sent."
+msgstr ""
+
+#: assets/js/admin.js:212
+msgid "Sending is paused, so the message was only written to the log."
+msgstr ""
+
+#. translators: %s: email address
+#: assets/js/admin.js:215
+#, js-format
+msgid "Sent to %s."
+msgstr ""
+
+#. translators: 1: provider, 2: message id
+#: assets/js/admin.js:218
+#, js-format
+msgid "%1$s accepted it as message %2$s. Check the inbox, and the spam folder."
+msgstr ""
+
+#. translators: %s: how it was sent, e.g. This server (PHP mail)
+#: assets/js/admin.js:221
+#, js-format
+msgid "Sent by: %s."
+msgstr ""
+
+#: assets/js/admin.js:224
+#: assets/js/admin.js:239
+msgid "Not sent."
+msgstr ""
+
+#: assets/js/admin.js:224
+msgid "WordPress reported a failure without a reason."
+msgstr ""
+
+#: assets/js/app.js:104
+msgid "Today"
+msgstr ""
+
+#: assets/js/app.js:105
+msgid "7 days"
+msgstr ""
+
+#: assets/js/app.js:106
+msgid "30 days"
+msgstr ""
+
+#: assets/js/app.js:107
+msgid "90 days"
+msgstr ""
+
+#: assets/js/app.js:108
+msgid "12 months"
+msgstr ""
+
+#: assets/js/app.js:213
+msgid "Could not load the data."
+msgstr ""
+
+#: assets/js/app.js:223
+msgid "Unknown"
+msgstr ""
+
+#: assets/js/app.js:241
+#: assets/js/app.js:356
+#: assets/js/app.js:435
+#: assets/js/app.js:584
+#: assets/js/app.js:744
+msgid "Sent"
+msgstr ""
+
+#: assets/js/app.js:241
+#: assets/js/app.js:357
+#: assets/js/app.js:436
+#: assets/js/app.js:585
+#: assets/js/app.js:744
+msgid "Failed"
+msgstr ""
+
+#: assets/js/app.js:267
+msgid "Period"
+msgstr ""
+
+#: assets/js/app.js:296
+msgid "Open the log"
+msgstr ""
+
+#: assets/js/app.js:298
+msgid "Emails"
+msgstr ""
+
+#. translators: %s: change in percentage points
+#: assets/js/app.js:330
+#, js-format
+msgid "%s pp"
+msgstr ""
+
+#. translators: %s: date range
+#: assets/js/app.js:353
+#, js-format
+msgid "vs %s"
+msgstr ""
+
+#. translators: %s: number of messages
+#: assets/js/app.js:357
+#, js-format
+msgid "%s paused"
+msgid_plural "%s paused"
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/js/app.js:358
+msgid "Delivery rate"
+msgstr ""
+
+#: assets/js/app.js:358
+msgid "accepted for delivery"
+msgstr ""
+
+#: assets/js/app.js:359
+msgid "Recipients"
+msgstr ""
+
+#. translators: %s: average recipients per message
+#: assets/js/app.js:359
+#, js-format
+msgid "%s per message"
+msgstr ""
+
+#: assets/js/app.js:368
+#: assets/js/app.js:549
+#: assets/js/app.js:572
+#: assets/js/app.js:800
+msgid "Sent by"
+msgstr ""
+
+#: assets/js/app.js:371
+msgid "Plugin or theme"
+msgstr ""
+
+#: assets/js/app.js:372
+#: assets/js/app.js:399
+#: assets/js/app.js:407
+msgid "Nothing was sent in this period."
+msgstr ""
+
+#: assets/js/app.js:376
+msgid "Problems"
+msgstr ""
+
+#: assets/js/app.js:385
+msgid "Unknown error"
+msgstr ""
+
+#. translators: %s: date and time
+#: assets/js/app.js:388
+#, js-format
+msgid "Last: %s"
+msgstr ""
+
+#: assets/js/app.js:392
+msgid "No failed emails in this period."
+msgstr ""
+
+#: assets/js/app.js:395
+msgid "Email types"
+msgstr ""
+
+#: assets/js/app.js:397
+#: assets/js/app.js:691
+#: assets/js/app.js:861
+msgid "(no subject)"
+msgstr ""
+
+#: assets/js/app.js:403
+msgid "Recipient domains"
+msgstr ""
+
+#: assets/js/app.js:405
+msgid "(none)"
+msgstr ""
+
+#. translators: %d: days
+#: assets/js/app.js:414
+#, js-format
+msgid "Counted from the log, which keeps %d day."
+msgid_plural "Counted from the log, which keeps %d days."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: first day of a week
+#: assets/js/app.js:425
+#, js-format
+msgid "Week of %s"
+msgstr ""
+
+#: assets/js/app.js:439
+#: assets/js/app.js:586
+#: assets/js/app.js:744
+msgid "Paused"
+msgstr ""
+
+#. translators: 1: number of messages, 2: date range
+#: assets/js/app.js:450
+#, js-format
+msgid "%1$s emails, %2$s"
+msgstr ""
+
+#: assets/js/app.js:493
+msgid "Click to see them in the log"
+msgstr ""
+
+#: assets/js/app.js:547
+msgid "Search recipient, subject or error"
+msgstr ""
+
+#: assets/js/app.js:547
+msgid "Search the log"
+msgstr ""
+
+#: assets/js/app.js:568
+msgid "When"
+msgstr ""
+
+#: assets/js/app.js:570
+#: assets/js/app.js:796
+msgid "To"
+msgstr ""
+
+#: assets/js/app.js:573
+#: assets/js/app.js:803
+msgid "Size"
+msgstr ""
+
+#: assets/js/app.js:583
+msgid "All"
+msgstr ""
+
+#: assets/js/app.js:620
+msgid "Sent by: everyone"
+msgstr ""
+
+#: assets/js/app.js:634
+msgid "Remove this filter"
+msgstr ""
+
+#. translators: %s: domain
+#: assets/js/app.js:649
+#, js-format
+msgid "To: %s"
+msgstr ""
+
+#. translators: %s: subject
+#: assets/js/app.js:653
+#, js-format
+msgid "Subject: %s"
+msgstr ""
+
+#: assets/js/app.js:679
+msgid "No messages match these filters."
+msgstr ""
+
+#: assets/js/app.js:679
+msgid "No messages yet. Everything WordPress sends shows up here."
+msgstr ""
+
+#. translators: 1: first row, 2: last row, 3: total
+#: assets/js/app.js:704
+#, js-format
+msgid "%1$s–%2$s of %3$s"
+msgstr ""
+
+#: assets/js/app.js:712
+msgid "Newer"
+msgstr ""
+
+#: assets/js/app.js:722
+msgid "Older"
+msgstr ""
+
+#: assets/js/app.js:754
+msgid "The content of this message wasn't kept (it was sent before keeping was turned on)."
+msgstr ""
+
+#: assets/js/app.js:754
+msgid "The content isn't kept. Turn on \"Keep the content of messages\" under Settings › Sending & log to read and resend messages."
+msgstr ""
+
+#: assets/js/app.js:761
+msgid "Message content"
+msgstr ""
+
+#: assets/js/app.js:766
+msgid "Show"
+msgstr ""
+
+#: assets/js/app.js:771
+msgid "Text"
+msgstr ""
+
+#: assets/js/app.js:781
+msgid "Loading…"
+msgstr ""
+
+#: assets/js/app.js:790
+#: assets/js/app.js:853
+#: assets/js/app.js:862
+msgid "Close"
+msgstr ""
+
+#: assets/js/app.js:797
+msgid "Cc"
+msgstr ""
+
+#: assets/js/app.js:798
+msgid "Bcc"
+msgstr ""
+
+#: assets/js/app.js:799
+msgid "Reply-To"
+msgstr ""
+
+#: assets/js/app.js:801
+msgid "Via"
+msgstr ""
+
+#: assets/js/app.js:802
+msgid "Message ID"
+msgstr ""
+
+#: assets/js/app.js:802
+msgid "Open in Gmail"
+msgstr ""
+
+#. translators: %s: milliseconds the provider took
+#: assets/js/app.js:803
+#, js-format
+msgid "%s ms"
+msgstr ""
+
+#: assets/js/app.js:804
+msgid "Attachments"
+msgstr ""
+
+#: assets/js/app.js:804
+msgid "inline"
+msgstr ""
+
+#: assets/js/app.js:805
+msgid "Headers"
+msgstr ""
+
+#: assets/js/app.js:815
+msgid "Resend without attachments"
+msgstr ""
+
+#: assets/js/app.js:815
+msgid "Resend"
+msgstr ""
+
+#. translators: %s: recipients
+#: assets/js/app.js:818
+#, js-format
+msgid "Send this message again to %s?"
+msgstr ""
+
+#: assets/js/app.js:824
+msgid "Sent again; it is the newest entry in the log."
+msgstr ""
+
+#. translators: %s: error
+#: assets/js/app.js:824
+#, js-format
+msgid "Not sent: %s"
+msgstr ""
+
+#: assets/js/app.js:838
+msgid "Delete"
+msgstr ""
+
+#: assets/js/app.js:841
+msgid "Delete this log entry?"
+msgstr ""
+
+#: assets/js/app.js:867
+msgid "Error:"
+msgstr ""

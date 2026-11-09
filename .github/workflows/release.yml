@@ -1,0 +1,54 @@
+# Push a tag like v1.0.0 to build the zip and publish a GitHub release with it.
+# Deploying to WordPress.org is off until the repository variable WPORG_DEPLOY is "true"
+# and the secrets SVN_USERNAME and SVN_PASSWORD are set (see PUBLISHING.md).
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  github:
+    name: GitHub release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        name: Check the tag matches the plugin version
+        run: |
+          version=$(sed -n 's/^ \* Version: *//p' nemvo-email/nemvo-email.php)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match plugin version $version" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - run: ./build.sh
+      - name: Release notes from readme.txt
+        run: awk -v v="= ${{ steps.version.outputs.version }} =" '$0 == v { f = 1; next } /^=/ { f = 0 } f' nemvo-email/readme.txt > notes.md
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Nemvo Email ${{ steps.version.outputs.version }}
+          body_path: notes.md
+          files: dist/nemvo-email-${{ steps.version.outputs.version }}.zip
+          make_latest: true
+
+  wordpress-org:
+    name: WordPress.org
+    needs: github
+    if: vars.WPORG_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: 10up/action-wordpress-plugin-deploy@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: nemvo-email
+          VERSION: ${{ needs.github.outputs.version }}
+          BUILD_DIR: nemvo-email
+          ASSETS_DIR: .wordpress-org

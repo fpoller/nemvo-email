@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<ruleset name="Nemvo Email">
+	<description>WordPress Coding Standards for Nemvo Email.</description>
+	<file>./nemvo-email</file>
+	<exclude-pattern>*/assets/vendor/*</exclude-pattern>
+	<arg name="extensions" value="php"/>
+	<config name="testVersion" value="7.4-"/>
+	<config name="minimum_supported_wp_version" value="6.2"/>
+	<rule ref="WordPress"/>
+	<rule ref="PHPCompatibilityWP"/>
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="nemvo-email"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="nemvo_email"/>
+				<element value="NemvoEmail"/>
+				<element value="NEMVO_EMAIL"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>

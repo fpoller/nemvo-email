@@ -1,0 +1,12 @@
+{
+	"name": "nemvo-email-e2e",
+	"private": true,
+	"type": "module",
+	"description": "Browser tests against the dev container (uses the locally installed Chrome).",
+	"scripts": {
+		"test": "node browser-test.mjs"
+	},
+	"devDependencies": {
+		"puppeteer-core": "25.14.0"
+	}
+}

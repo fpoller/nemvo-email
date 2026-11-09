@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  php-lint:
+    name: PHP ${{ matrix.php }} lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - run: find nemvo-email -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
+
+  coding-standards:
+    name: WordPress Coding Standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer
+      - name: Install WPCS and PHPCompatibilityWP
+        run: |
+          composer global config -n allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer global require -n wp-coding-standards/wpcs:^3 phpcompatibility/phpcompatibility-wp:^2
+      - run: $(composer global config home)/vendor/bin/phpcs --standard=phpcs.xml.dist
+
+  build:
+    name: Build zip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: JavaScript syntax
+        run: for f in nemvo-email/assets/js/*.js; do node --check "$f"; done
+      - run: ./build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nemvo-email-zip
+          path: dist/*.zip
+
+  plugin-check:
+    name: Plugin Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: ./nemvo-email
+          slug: nemvo-email
